@@ -14,8 +14,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <maven.compiler.source>12</maven.compiler.source>
-    <maven.compiler.target>12</maven.compiler.target>
+    <maven.compiler.source>13</maven.compiler.source>
+    <maven.compiler.target>13</maven.compiler.target>
 
     <!-- find latest at https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
     <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
@@ -59,6 +59,17 @@
           </archive>
         </configuration>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <release>13</release>
+          <compilerArgs>--enable-preview</compilerArgs>
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
+        </configuration>
+      </plugin>
+
       <!-- JaCoCo configuration: provides test coverage reports -->
       <plugin>
         <groupId>org.jacoco</groupId>

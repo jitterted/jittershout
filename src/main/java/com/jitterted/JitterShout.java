@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class JitterShout {
@@ -30,6 +28,7 @@ public class JitterShout {
 
   private Map<Long, TwitchUser> twitchUserMap = new HashMap<>();
   private TwitchChat twitchChat;
+  private Shouter shouter;
 
   public static void main(String[] args) {
     TwitchProperties twitchProperties = loadProperties();
@@ -64,23 +63,22 @@ public class JitterShout {
   public void connect(TwitchProperties twitchProperties) {
     TwitchClient twitchClient = createTwitchClient(twitchProperties);
 
-    loadTeamUsers(twitchProperties, twitchClient.getEventManager());
-
-    twitchChat = twitchClient.getChat();
-    joinChat(twitchChat);
-  }
-
-  private void loadTeamUsers(TwitchProperties twitchProperties, EventManager eventManager) {
-    JitterTwitchKraken kraken = (JitterTwitchKraken) JitterTwitchKrakenBuilder
+    TwitchTeam twitchTeam = fetchTeam((JitterTwitchKraken) JitterTwitchKrakenBuilder
         .builder()
         .withClientId(twitchProperties.getTwitchClientId())
         .withClientSecret(twitchProperties.getTwitchClientSecret())
-        .withEventManager(eventManager)
-        .build();
-    TwitchTeam twitchTeam = kraken.getTeamWithUsersByName(TEAM_NAME).execute();
-    twitchUserMap = twitchTeam.getUsers().stream()
-                              .collect(Collectors.toMap(TwitchUser::getId, Function.identity()));
-    log.info("Loaded {} users from team", twitchUserMap.size());
+        .withEventManager(twitchClient.getEventManager())
+        .build());
+
+    twitchChat = twitchClient.getChat();
+    joinChat(twitchChat);
+
+    shouter = new Shouter(new TwitchChatMessageSender(twitchChat, CHANNEL_NAME), twitchTeam);
+
+  }
+
+  private TwitchTeam fetchTeam(JitterTwitchKraken kraken) {
+    return kraken.getTeamWithUsersByName(TEAM_NAME).execute();
   }
 
   private void joinChat(TwitchChat chat) {
@@ -103,15 +101,8 @@ public class JitterShout {
   }
 
   private void onChannelMessage(ChannelMessageEvent channelMessageEvent) {
-    Long userId = channelMessageEvent.getUser().getId();
-    if (twitchUserMap.containsKey(userId)) {
-      TwitchUser twitchUser = twitchUserMap.get(userId);
-      twitchChat.sendMessage(CHANNEL_NAME, "Hey, it's " + twitchUser.getDisplayName()
-          + ", a member of the Live Coders team! Check out their stream at "
-          + twitchUser.getUrl());
-      log.info("Said hello to " + twitchUser);
-      twitchUserMap.remove(userId);
-    }
+    long userId = channelMessageEvent.getUser().getId();
+    shouter.shoutTo(userId);
   }
 
   private TwitchClient createTwitchClient(TwitchProperties twitchProperties) {
