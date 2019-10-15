@@ -23,8 +23,8 @@
     <!-- find latest at https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
     <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
 
-    <!-- junit 4.12 is last of the 4.x series -->
-    <junit.version>4.12</junit.version>
+    <!-- find latest at https://junit.org -->
+    <junit-jupiter-version>5.5.2</junit-jupiter-version>
 
     <!-- find latest at https://mvnrepository.com/artifact/org.assertj/assertj-core -->
     <assertj.version>3.11.1</assertj.version>
@@ -32,7 +32,7 @@
     <!-- find latest at https://mvnrepository.com/artifact/org.mockito/mockito-core -->
     <mockito.version>2.23.4</mockito.version>
     <lombok.version>1.18.10</lombok.version>
-    <twitch4j.version>1.0.0-alpha.16</twitch4j.version>
+    <twitch4j.version>1.0.0-alpha.17</twitch4j.version>
   </properties>
 
   <repositories>
@@ -114,12 +114,31 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- this is all you need to write tests with JUnit Jupiter -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit-jupiter-version}</version>
+      <!-- for writing tests "test" scope would suffice,
+        but extensions are defined in the project's "main" folder, which would need "compile" -->
       <scope>test</scope>
     </dependency>
+    <!-- this dependency is needed to create parameterized tests -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <version>${junit-jupiter-version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- contains the engine that actually runs the Jupiter-tests -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit-jupiter-version}</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
