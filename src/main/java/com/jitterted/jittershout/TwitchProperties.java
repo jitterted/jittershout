@@ -1,4 +1,4 @@
-package com.jitterted;
+package com.jitterted.jittershout;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.jitterted;
+package com.jitterted.jittershout;
 
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.EventManager;

@@ -1,4 +1,4 @@
-package com.jitterted;
+package com.jitterted.jittershout;
 
 import com.github.twitch4j.chat.TwitchChat;
 
