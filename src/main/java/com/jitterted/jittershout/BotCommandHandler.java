@@ -24,7 +24,6 @@ public class BotCommandHandler {
   }
 
   public void handle(CommandEvent commandEvent) {
-    // commandEvent Permissions are chat badges, see: https://help.twitch.tv/s/article/twitch-chat-badges-guide?language=en_US
     if (!permissionChecker.allows(commandEvent.getPermissions())) {
       return;
     }
@@ -36,7 +35,15 @@ public class BotCommandHandler {
   }
 
   private boolean validShoutOutBotCommand(String[] tokens) {
-    return tokens[0].equals("sob") && tokens.length > 1;
+    return isShoutOutCommand(tokens[0]) && hasSubCommand(tokens);
+  }
+
+  private boolean isShoutOutCommand(String token) {
+    return token.equals("sob");
+  }
+
+  private boolean hasSubCommand(String[] tokens) {
+    return tokens.length > 1;
   }
 
   private void handleShoutOutBotCommand(String subcommand) {

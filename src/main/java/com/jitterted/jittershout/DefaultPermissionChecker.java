@@ -7,6 +7,8 @@ import java.util.Set;
 
 public class DefaultPermissionChecker implements PermissionChecker {
 
+  // CommandPermissions come from chat badges, see: https://help.twitch.tv/s/article/twitch-chat-badges-guide?language=en_US
+
   private static final Set<CommandPermission> ALLOWED_PERMISSIONS =
       Set.of(CommandPermission.BROADCASTER,
              CommandPermission.MODERATOR);
