@@ -103,6 +103,20 @@ public class BotCommandHandlerTest {
     verify(senderSpy, never()).send(any());
   }
 
+  @Test
+  public void commandWithoutSufficientPermissionIsIgnored() throws Exception {
+    MessageSender senderSpy = Mockito.mock(MessageSender.class);
+    KrakenTeam krakenTeam = new KrakenTeam();
+    krakenTeam.setUsers(Collections.emptyList());
+
+    PermissionChecker disallowedPermissionChecker = commandPermissions -> false;
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, krakenTeam, new BotStatus(false), disallowedPermissionChecker);
+
+    botCommandHandler.handle(createCommandWithText("sob status"));
+
+    verify(senderSpy, never()).send(any());
+  }
+
   @NotNull
   private CommandEvent createCommandWithText(String commandText) {
     return new CommandEvent(null, null, null, null, commandText, Collections.emptySet());

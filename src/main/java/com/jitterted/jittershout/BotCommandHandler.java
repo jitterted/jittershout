@@ -9,15 +9,26 @@ public class BotCommandHandler {
   private final MessageSender messageSender;
   private final KrakenTeam krakenTeam;
   private final BotStatus botStatus;
+  private final PermissionChecker permissionChecker;
+
 
   public BotCommandHandler(MessageSender messageSender, KrakenTeam krakenTeam, BotStatus botStatus) {
+    this(messageSender, krakenTeam, botStatus, new AlwaysAllowedPermissionChecker());
+  }
+
+  public BotCommandHandler(MessageSender messageSender, KrakenTeam krakenTeam, BotStatus botStatus, PermissionChecker permissionChecker) {
     this.messageSender = messageSender;
     this.krakenTeam = krakenTeam;
     this.botStatus = botStatus;
+    this.permissionChecker = permissionChecker;
   }
 
   public void handle(CommandEvent commandEvent) {
     // commandEvent Permissions are chat badges, see: https://help.twitch.tv/s/article/twitch-chat-badges-guide?language=en_US
+    if (!permissionChecker.allows(commandEvent.getPermissions())) {
+      return;
+    }
+
     String[] tokens = commandEvent.getCommand().split(" ");
     if (validShoutOutBotCommand(tokens)) {
       handleShoutOutBotCommand(tokens[1]);
@@ -52,4 +63,5 @@ public class BotCommandHandler {
   private String shoutOutStatusAsText() {
     return botStatus.isShoutOutEnabled() ? "on" : "off";
   }
+
 }

@@ -81,7 +81,7 @@ public class JitterShoutOutBot {
     TwitchChatMessageSender messageSender = new TwitchChatMessageSender(twitchChat, CHANNEL_NAME);
     shouter = new Shouter(messageSender, krakenTeam, botStatus);
 
-    botCommandHandler = new BotCommandHandler(messageSender, krakenTeam, botStatus);
+    botCommandHandler = new BotCommandHandler(messageSender, krakenTeam, botStatus, new DefaultPermissionChecker());
   }
 
   private KrakenTeam fetchTeam(TwitchKraken kraken) {
@@ -109,6 +109,7 @@ public class JitterShoutOutBot {
 
   private void onChannelMessage(ChannelMessageEvent channelMessageEvent) {
     UserId userId = new UserId(channelMessageEvent.getUser().getId());
+    log.info(channelMessageEvent.getPermissions().toString());
     shouter.shoutOutTo(userId);
   }
 
