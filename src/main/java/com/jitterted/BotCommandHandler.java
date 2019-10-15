@@ -18,7 +18,13 @@ public class BotCommandHandler {
 
   public void handle(CommandEvent commandEvent) {
     String[] tokens = commandEvent.getCommand().split(" ");
-    switch (tokens[1]) {
+    if (tokens.length > 1) {
+      handleSubcommand(tokens[1]);
+    }
+  }
+
+  private void handleSubcommand(String subcommand) {
+    switch (subcommand) {
       case "status" -> messageSender.send(botStatusMessage());
       case "off" -> changeShoutOutTo(false);
       case "on" -> changeShoutOutTo(true);

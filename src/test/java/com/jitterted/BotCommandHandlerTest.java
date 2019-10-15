@@ -14,7 +14,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class BotCommandHandlerTest {
@@ -72,6 +74,19 @@ public class BotCommandHandlerTest {
     botCommandHandler.handle(createCommandWithText("sob " + state));
 
     verify(senderSpy).send("Shout-out is now " + state);
+  }
+
+  @Test
+  public void sobCommandWithoutSubcommandIsIgnored() throws Exception {
+    MessageSender senderSpy = Mockito.mock(MessageSender.class);
+    KrakenTeam krakenTeam = new KrakenTeam();
+    krakenTeam.setUsers(Collections.emptyList());
+
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, krakenTeam, new BotStatus(true));
+
+    botCommandHandler.handle(createCommandWithText("sob"));
+
+    verify(senderSpy, never()).send(any());
   }
 
   @NotNull
