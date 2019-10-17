@@ -8,10 +8,9 @@ import com.github.twitch4j.chat.TwitchChat;
 import com.github.twitch4j.chat.events.CommandEvent;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
-import com.github.twitch4j.kraken.TwitchKraken;
-import com.github.twitch4j.kraken.TwitchKrakenBuilder;
 import com.github.twitch4j.kraken.domain.KrakenTeam;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 @Slf4j
 public class JitterShoutOutBot {
@@ -32,39 +31,45 @@ public class JitterShoutOutBot {
   public void connect(TwitchProperties twitchProperties) {
     TwitchClient twitchClient = createTwitchClient(twitchProperties);
 
-    twitchClient.getClientHelper()
-                .enableStreamEventListener(CHANNEL_NAME);
-
-    TwitchKraken twitchKraken = TwitchKrakenBuilder.builder()
-                                                   .withClientId(twitchProperties.getTwitchClientId())
-                                                   .withClientSecret(twitchProperties.getTwitchClientSecret())
-                                                   .withEventManager(twitchClient.getEventManager())
-                                                   .build();
-    KrakenTeam krakenTeam = fetchTeam(twitchKraken);
+    registerEventHandlers(twitchClient.getEventManager());
 
     twitchChat = twitchClient.getChat();
-    joinChat(twitchChat);
+    twitchChat.joinChannel(CHANNEL_NAME);
+    twitchChat.sendMessage(CHANNEL_NAME, "The JitterChat ShoutBot is here!");
+
+    TwitchChatMessageSender messageSender = new TwitchChatMessageSender(twitchChat, CHANNEL_NAME);
 
     BotStatus botStatus = BotStatus.builder()
                                    .shoutOutEnabled(true)
                                    .build();
 
-    TwitchChatMessageSender messageSender = new TwitchChatMessageSender(twitchChat, CHANNEL_NAME);
+    KrakenTeam krakenTeam = twitchClient.getKraken().getTeamByName(TEAM_NAME).execute();
+
     shouter = new Shouter(messageSender, krakenTeam, botStatus);
 
     botCommandHandler = new BotCommandHandler(messageSender, krakenTeam, botStatus, new DefaultPermissionChecker());
   }
 
-  private KrakenTeam fetchTeam(TwitchKraken kraken) {
-    return kraken.getTeamByName(TEAM_NAME).execute();
+  @NotNull
+  private TwitchClient createTwitchClient(TwitchProperties twitchProperties) {
+    OAuth2Credential credential = new OAuth2Credential("twitch", twitchProperties.getOAuthToken());
+
+    TwitchClient twitchClient = TwitchClientBuilder.builder()
+                                                   .withClientId(twitchProperties.getTwitchClientId())
+                                                   .withClientSecret(twitchProperties.getTwitchClientSecret())
+                                                   .withEnableChat(true)
+                                                   .withEnableHelix(true)
+                                                   .withEnableKraken(true)
+                                                   .withChatAccount(credential)
+                                                   .withCommandTrigger("!")
+                                                   .build();
+
+    twitchClient.getClientHelper()
+                .enableStreamEventListener(CHANNEL_NAME);
+    return twitchClient;
   }
 
-  private void joinChat(TwitchChat chat) {
-    chat.joinChannel(CHANNEL_NAME);
-    chat.sendMessage(CHANNEL_NAME, "The JitterChat ShoutBot is here!");
-
-    EventManager eventManager = chat.getEventManager();
-
+  private void registerEventHandlers(EventManager eventManager) {
     eventManager
         .onEvent(ChannelMessageEvent.class)
         .subscribe(this::onChannelMessage);
@@ -90,19 +95,6 @@ public class JitterShoutOutBot {
     UserId userId = new UserId(channelMessageEvent.getUser().getId());
     log.info(channelMessageEvent.getPermissions().toString());
     shouter.shoutOutTo(userId);
-  }
-
-  private TwitchClient createTwitchClient(TwitchProperties twitchProperties) {
-    OAuth2Credential credential = new OAuth2Credential("twitch", twitchProperties.getOAuthToken());
-
-    return TwitchClientBuilder.builder()
-                              .withClientId(twitchProperties.getTwitchClientId())
-                              .withClientSecret(twitchProperties.getTwitchClientSecret())
-                              .withEnableChat(true)
-                              .withEnableHelix(true)
-                              .withChatAccount(credential)
-                              .withCommandTrigger("!")
-                              .build();
   }
 
 }
