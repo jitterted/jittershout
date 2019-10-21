@@ -12,7 +12,7 @@ public class ShouterTest {
   public void userNotInTeamMeansNoShoutOut() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(false), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(false), new BotStatus(true));
 
     shouter.shoutOutTo(UserId.from(0L));
 
@@ -23,7 +23,7 @@ public class ShouterTest {
   public void userInTeamTriggersShoutOutToThatUser() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
 
     shouter.shoutOutTo(UserId.from(37L));
 
@@ -34,7 +34,7 @@ public class ShouterTest {
   public void userInTeamGetsShoutedAtOnlyOnce() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
 
     shouter.shoutOutTo(UserId.from(73L));
     shouter.shoutOutTo(UserId.from(73L));
@@ -46,7 +46,7 @@ public class ShouterTest {
   public void userInTeamDoesNotGetShoutOutIfShoutOutIsDisabled() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(false), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(false), new BotStatus(true));
 
     shouter.shoutOutTo(UserId.from(57L));
 
@@ -57,7 +57,7 @@ public class ShouterTest {
   public void userInTeamGetsShoutOutAfterReset() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
 
     shouter.shoutOutTo(UserId.from(67L));
     shouter.resetShoutOutTracking();

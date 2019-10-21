@@ -46,7 +46,7 @@ public class JitterShoutOutBot {
     TeamFetcher teamFetcher = new TwitchTeamFetcher(twitchClient.getKraken(), TEAM_NAME);
     twitchTeam = new Twitch4JTwitchTeam(teamFetcher);
 
-    shouter = new Shouter(messageSender, twitchTeam, botStatus);
+    shouter = new DefaultShouter(messageSender, twitchTeam, botStatus);
 
     botCommandHandler = new BotCommandHandler(messageSender, botStatus, new DefaultPermissionChecker());
   }
