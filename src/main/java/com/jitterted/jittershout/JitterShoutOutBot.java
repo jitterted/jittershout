@@ -48,7 +48,7 @@ public class JitterShoutOutBot {
 
     shouter = new DefaultShouter(messageSender, twitchTeam, botStatus);
 
-    botCommandHandler = new BotCommandHandler(messageSender, botStatus, new DefaultPermissionChecker());
+    botCommandHandler = new BotCommandHandler(messageSender, botStatus, new DefaultPermissionChecker(), shouter);
   }
 
   @NotNull

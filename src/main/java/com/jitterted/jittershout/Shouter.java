@@ -4,4 +4,6 @@ public interface Shouter {
   void shoutOutTo(UserId id);
 
   void resetShoutOutTracking();
+
+  int shoutOutTrackingCount();
 }

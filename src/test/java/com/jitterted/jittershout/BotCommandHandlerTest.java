@@ -1,7 +1,6 @@
 package com.jitterted.jittershout;
 
 import com.github.twitch4j.chat.events.CommandEvent;
-import com.github.twitch4j.kraken.domain.KrakenTeam;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,13 +18,14 @@ import static org.mockito.Mockito.verify;
 
 public class BotCommandHandlerTest {
 
-  public static final MessageSender DUMMY_MESSAGE_SENDER = Mockito.mock(MessageSender.class);
+  private static final MessageSender DUMMY_MESSAGE_SENDER = Mockito.mock(MessageSender.class);
+  private static final Shouter DUMMY_SHOUTER = Mockito.mock(Shouter.class);
 
   @Test
   public void statusCommandSendsBotStatusMessage() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(true));
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(true), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
 
     botCommandHandler.handle(createCommandWithText("sob status"));
 
@@ -35,10 +35,8 @@ public class BotCommandHandlerTest {
   @Test
   public void whenShoutOutIsDisabledStatusSaysItsOff() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
-    KrakenTeam krakenTeam = new KrakenTeam();
-    krakenTeam.setUsers(Collections.emptyList());
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(false));
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(false), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
 
     botCommandHandler.handle(createCommandWithText("sob status"));
 
@@ -48,8 +46,8 @@ public class BotCommandHandlerTest {
   @ParameterizedTest
   @CsvSource({"sob off, false", "sob on, true"})
   public void sobOffCommandDisablesShoutOut(String command, boolean expectedEnabled) throws Exception {
-    BotStatus botStatus = BotStatus.builder().shoutOutEnabled(true).build();
-    BotCommandHandler botCommandHandler = new BotCommandHandler(DUMMY_MESSAGE_SENDER, botStatus);
+    BotStatus botStatus = new BotStatus(true);
+    BotCommandHandler botCommandHandler = new BotCommandHandler(DUMMY_MESSAGE_SENDER, botStatus, new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
 
     botCommandHandler.handle(createCommandWithText(command));
 
@@ -61,10 +59,8 @@ public class BotCommandHandlerTest {
   @ValueSource(strings = {"on", "off"})
   public void sobCommandIsAcknowledgedWithNewStatusMessage(String state) throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
-    KrakenTeam krakenTeam = new KrakenTeam();
-    krakenTeam.setUsers(Collections.emptyList());
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(false));
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(false), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
 
     botCommandHandler.handle(createCommandWithText("sob " + state));
 
@@ -74,10 +70,8 @@ public class BotCommandHandlerTest {
   @Test
   public void sobCommandWithoutSubcommandIsIgnored() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
-    KrakenTeam krakenTeam = new KrakenTeam();
-    krakenTeam.setUsers(Collections.emptyList());
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(true));
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(true), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
 
     botCommandHandler.handle(createCommandWithText("sob"));
 
@@ -88,10 +82,8 @@ public class BotCommandHandlerTest {
   @ValueSource(strings = {"", "foo", "foo status"})
   public void invalidCommandsAreIgnored(String commandText) throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
-    KrakenTeam krakenTeam = new KrakenTeam();
-    krakenTeam.setUsers(Collections.emptyList());
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(true));
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(true), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
 
     botCommandHandler.handle(createCommandWithText(commandText));
 
@@ -101,19 +93,53 @@ public class BotCommandHandlerTest {
   @Test
   public void commandWithoutSufficientPermissionIsIgnored() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
-    KrakenTeam krakenTeam = new KrakenTeam();
-    krakenTeam.setUsers(Collections.emptyList());
 
     PermissionChecker disallowedPermissionChecker = commandPermissions -> false;
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(false), disallowedPermissionChecker);
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy,
+                                                                new BotStatus(false),
+                                                                disallowedPermissionChecker,
+                                                                DUMMY_SHOUTER);
 
     botCommandHandler.handle(createCommandWithText("sob status"));
 
     verify(senderSpy, never()).send(any());
   }
 
+  @Test
+  public void shoutOutStatusResetCommandResetsTracker() throws Exception {
+    MessageSender dummyMessageSender = message -> {
+    };
+    Shouter fakeShouter = new FakeShouter();
+    BotCommandHandler botCommandHandler = new BotCommandHandler(dummyMessageSender,
+                                                                new BotStatus(true),
+                                                                new AlwaysAllowedPermissionChecker(),
+                                                                fakeShouter);
+
+
+    botCommandHandler.handle(createCommandWithText("sob reset"));
+
+    assertThat(fakeShouter.shoutOutTrackingCount())
+        .isZero();
+  }
+
   @NotNull
   private CommandEvent createCommandWithText(String commandText) {
     return new CommandEvent(null, null, null, null, commandText, Collections.emptySet());
+  }
+
+  private static class FakeShouter implements Shouter {
+    private int count = 1;
+
+    public void shoutOutTo(UserId id) {
+    }
+
+    public void resetShoutOutTracking() {
+      count = 0;
+    }
+
+    @Override
+    public int shoutOutTrackingCount() {
+      return count;
+    }
   }
 }

@@ -30,6 +30,11 @@ public class DefaultShouter implements Shouter {
     shoutedOutAtUsers.clear();
   }
 
+  @Override
+  public int shoutOutTrackingCount() {
+    return shoutedOutAtUsers.size();
+  }
+
   private void sendShoutOut(UserId id) {
     if (alreadyShoutedOutTo(id)) {
       return;

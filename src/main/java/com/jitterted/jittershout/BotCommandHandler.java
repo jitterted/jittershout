@@ -8,16 +8,16 @@ public class BotCommandHandler {
   private final MessageSender messageSender;
   private final BotStatus botStatus;
   private final PermissionChecker permissionChecker;
+  private final Shouter shouter;
 
-
-  public BotCommandHandler(MessageSender messageSender, BotStatus botStatus) {
-    this(messageSender, botStatus, new AlwaysAllowedPermissionChecker());
-  }
-
-  public BotCommandHandler(MessageSender messageSender, BotStatus botStatus, PermissionChecker permissionChecker) {
+  public BotCommandHandler(MessageSender messageSender,
+                           BotStatus botStatus,
+                           PermissionChecker permissionChecker,
+                           Shouter shouter) {
     this.messageSender = messageSender;
     this.botStatus = botStatus;
     this.permissionChecker = permissionChecker;
+    this.shouter = shouter;
   }
 
   public void handle(CommandEvent commandEvent) {
@@ -48,6 +48,7 @@ public class BotCommandHandler {
       case "status" -> messageSender.send(botStatusMessage());
       case "off" -> changeShoutOutTo(false);
       case "on" -> changeShoutOutTo(true);
+      case "reset" -> shouter.resetShoutOutTracking();
     }
   }
 
