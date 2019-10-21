@@ -20,6 +20,7 @@ public class JitterShoutOutBot {
   private TwitchChat twitchChat;
   private Shouter shouter;
   private BotCommandHandler botCommandHandler;
+  private Twitch4JTwitchTeam twitchTeam;
 
   public static void main(String[] args) {
     TwitchProperties twitchProperties = TwitchProperties.loadProperties();
@@ -43,7 +44,9 @@ public class JitterShoutOutBot {
                                    .build();
 
     TeamFetcher teamFetcher = new TwitchTeamFetcher(twitchClient.getKraken(), TEAM_NAME);
-    shouter = new Shouter(messageSender, new Twitch4JTwitchTeam(teamFetcher), botStatus);
+    twitchTeam = new Twitch4JTwitchTeam(teamFetcher);
+
+    shouter = new Shouter(messageSender, twitchTeam, botStatus);
 
     botCommandHandler = new BotCommandHandler(messageSender, botStatus, new DefaultPermissionChecker());
   }
@@ -82,7 +85,8 @@ public class JitterShoutOutBot {
   }
 
   private void onChannelGoLive(ChannelGoLiveEvent channelGoLiveEvent) {
-    // integrate with reload of team list
+    twitchTeam.refresh();
+    shouter.resetShoutOutTracking();
   }
 
   private void onCommand(CommandEvent commandEvent) {

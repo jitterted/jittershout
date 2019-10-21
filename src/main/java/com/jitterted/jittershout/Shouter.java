@@ -38,6 +38,10 @@ public class Shouter {
     markUserAsShoutedOutTo(id);
   }
 
+  public void resetShoutOutTracking() {
+    shoutedOutAtUsers.clear();
+  }
+
   private void markUserAsShoutedOutTo(UserId id) {
     shoutedOutAtUsers.add(id);
   }
@@ -45,5 +49,4 @@ public class Shouter {
   private boolean alreadyShoutedOutTo(UserId id) {
     return shoutedOutAtUsers.contains(id);
   }
-
 }

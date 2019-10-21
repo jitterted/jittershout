@@ -1,11 +1,7 @@
 package com.jitterted.jittershout;
 
-import com.github.twitch4j.kraken.domain.KrakenTeam;
-import com.github.twitch4j.kraken.domain.KrakenTeamUser;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -49,19 +45,25 @@ public class ShouterTest {
   @Test
   public void userInTeamDoesNotGetShoutOutIfShoutOutIsDisabled() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
-    KrakenTeam team = new KrakenTeam();
-    KrakenTeamUser teamUser = new KrakenTeamUser();
-    teamUser.setDisplayName("JitterTed");
-    teamUser.setId(57L);
-    team.setUsers(List.of(teamUser));
 
-    BotStatus botStatus = BotStatus.builder().shoutOutEnabled(false).build();
-
-    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(false), botStatus);
+    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(false), new BotStatus(true));
 
     shouter.shoutOutTo(UserId.from(57L));
 
     verify(senderSpy, never()).send(any());
+  }
+
+  @Test
+  public void userInTeamGetsShoutOutAfterReset() throws Exception {
+    MessageSender senderSpy = Mockito.mock(MessageSender.class);
+
+    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
+
+    shouter.shoutOutTo(UserId.from(67L));
+    shouter.resetShoutOutTracking();
+    shouter.shoutOutTo(UserId.from(67L));
+
+    verify(senderSpy, times(2)).send(any());
   }
 
   private static class StubTwitchTeam implements TwitchTeam {
