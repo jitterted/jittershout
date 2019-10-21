@@ -107,10 +107,9 @@ public class BotCommandHandlerTest {
 
   @Test
   public void shoutOutStatusResetCommandResetsTracker() throws Exception {
-    MessageSender dummyMessageSender = message -> {
-    };
+    MessageSender senderSpy = Mockito.mock(MessageSender.class);
     Shouter fakeShouter = new FakeShouter();
-    BotCommandHandler botCommandHandler = new BotCommandHandler(dummyMessageSender,
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy,
                                                                 new BotStatus(true),
                                                                 new AlwaysAllowedPermissionChecker(),
                                                                 fakeShouter);
@@ -120,6 +119,8 @@ public class BotCommandHandlerTest {
 
     assertThat(fakeShouter.shoutOutTrackingCount())
         .isZero();
+
+    verify(senderSpy).send("Shout-Out Tracking has been reset.");
   }
 
   @NotNull

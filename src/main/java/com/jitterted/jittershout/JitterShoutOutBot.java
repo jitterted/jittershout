@@ -21,6 +21,7 @@ public class JitterShoutOutBot {
   private Shouter shouter;
   private BotCommandHandler botCommandHandler;
   private Twitch4JTwitchTeam twitchTeam;
+  private TwitchChatMessageSender messageSender;
 
   public static void main(String[] args) {
     TwitchProperties twitchProperties = TwitchProperties.loadProperties();
@@ -37,7 +38,7 @@ public class JitterShoutOutBot {
     twitchChat.joinChannel(CHANNEL_NAME);
     twitchChat.sendMessage(CHANNEL_NAME, "The JitterChat ShoutBot is here!");
 
-    TwitchChatMessageSender messageSender = new TwitchChatMessageSender(twitchChat, CHANNEL_NAME);
+    messageSender = new TwitchChatMessageSender(twitchChat, CHANNEL_NAME);
 
     BotStatus botStatus = BotStatus.builder()
                                    .shoutOutEnabled(true)
@@ -85,6 +86,7 @@ public class JitterShoutOutBot {
   }
 
   private void onChannelGoLive(ChannelGoLiveEvent channelGoLiveEvent) {
+    messageSender.send("GOING LIVE: Refreshing the %s team membership and resetting Shout-Out Tracking".formatted(TEAM_NAME));
     twitchTeam.refresh();
     shouter.resetShoutOutTracking();
   }

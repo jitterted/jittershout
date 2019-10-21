@@ -48,8 +48,13 @@ public class BotCommandHandler {
       case "status" -> messageSender.send(botStatusMessage());
       case "off" -> changeShoutOutTo(false);
       case "on" -> changeShoutOutTo(true);
-      case "reset" -> shouter.resetShoutOutTracking();
+      case "reset" -> resetShoutOutTracker();
     }
+  }
+
+  private void resetShoutOutTracker() {
+    shouter.resetShoutOutTracking();
+    messageSender.send("Shout-Out Tracking has been reset.");
   }
 
   private void changeShoutOutTo(boolean enabled) {
