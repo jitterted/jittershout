@@ -1,53 +1,49 @@
 package com.jitterted.jittershout;
 
-import com.github.twitch4j.kraken.domain.KrakenTeam;
-import com.github.twitch4j.kraken.domain.KrakenTeamUser;
-
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Shouter {
   private final MessageSender messageSender;
-  private final Map<UserId, KrakenTeamUser> userMap;
+  private final TwitchTeam twitchTeam;
   private final BotStatus botStatus;
-  private final String teamName;
+  private final Set<UserId> shoutedOutAtUsers = new HashSet<>();
 
-  public Shouter(MessageSender messageSender, KrakenTeam team, BotStatus botStatus) {
+  public Shouter(MessageSender messageSender, TwitchTeam twitchTeam, BotStatus botStatus) {
     this.messageSender = messageSender;
-    // TODO: when this is fixed in the next release of Twitch4J, we won't need to check for null anymore
-    teamName = team.getDisplayName() != null ? team.getDisplayName() : team.getName();
-    userMap = team.getUsers().stream()
-                  .collect(Collectors.toMap(UserId::from, Function.identity()));
+    this.twitchTeam = twitchTeam;
     this.botStatus = botStatus;
-    messageSender.send(
-        "Our team is '%s' which has %d members."
-            .formatted(teamName, userMap.size())
-    );
   }
 
   public void shoutOutTo(UserId id) {
     if (!botStatus.isShoutOutEnabled()) {
       return;
     }
-    if (memberOfTeam(id)) {
+    if (twitchTeam.isMember(id)) {
       sendShoutOut(id);
-      acknowledgeUser(id);
     }
   }
 
-  private void acknowledgeUser(UserId id) {
-    userMap.remove(id);
-  }
-
   private void sendShoutOut(UserId id) {
-    KrakenTeamUser user = userMap.get(id);
-    messageSender.send("Hey, it's " + user.getDisplayName()
-                           + ", a member of the " + teamName
-                           + " team! Check out their stream at " + user.getUrl());
+    if (alreadyShoutedOutTo(id)) {
+      return;
+    }
+    TwitchUser twitchUser = twitchTeam.userById(id);
+    messageSender.send("Hey, it's "
+                           + twitchUser.name()
+                           + ", a member of the " + twitchTeam.name()
+                           + " team! Check out their stream at "
+                           + twitchUser.url()
+    );
+    markUserAsShoutedOutTo(id);
   }
 
-  private boolean memberOfTeam(UserId id) {
-    return userMap.containsKey(id);
+  private void markUserAsShoutedOutTo(UserId id) {
+    shoutedOutAtUsers.add(id);
   }
+
+  private boolean alreadyShoutedOutTo(UserId id) {
+    return shoutedOutAtUsers.contains(id);
+  }
+
 }

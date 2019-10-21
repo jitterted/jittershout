@@ -1,24 +1,21 @@
 package com.jitterted.jittershout;
 
 import com.github.twitch4j.chat.events.CommandEvent;
-import com.github.twitch4j.kraken.domain.KrakenTeam;
 import org.jetbrains.annotations.NotNull;
 
 public class BotCommandHandler {
 
   private final MessageSender messageSender;
-  private final KrakenTeam krakenTeam;
   private final BotStatus botStatus;
   private final PermissionChecker permissionChecker;
 
 
-  public BotCommandHandler(MessageSender messageSender, KrakenTeam krakenTeam, BotStatus botStatus) {
-    this(messageSender, krakenTeam, botStatus, new AlwaysAllowedPermissionChecker());
+  public BotCommandHandler(MessageSender messageSender, BotStatus botStatus) {
+    this(messageSender, botStatus, new AlwaysAllowedPermissionChecker());
   }
 
-  public BotCommandHandler(MessageSender messageSender, KrakenTeam krakenTeam, BotStatus botStatus, PermissionChecker permissionChecker) {
+  public BotCommandHandler(MessageSender messageSender, BotStatus botStatus, PermissionChecker permissionChecker) {
     this.messageSender = messageSender;
-    this.krakenTeam = krakenTeam;
     this.botStatus = botStatus;
     this.permissionChecker = permissionChecker;
   }
@@ -60,10 +57,7 @@ public class BotCommandHandler {
   }
 
   private String botStatusMessage() {
-    return ("Shout-out is %s, for the %d team members of '%s'.")
-        .formatted(shoutOutStatusAsText(),
-                   krakenTeam.getUsers().size(),
-                   krakenTeam.getName());
+    return "Shout-out is %s.".formatted(shoutOutStatusAsText());
   }
 
   @NotNull

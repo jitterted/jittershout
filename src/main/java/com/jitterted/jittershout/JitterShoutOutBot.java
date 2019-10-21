@@ -8,7 +8,6 @@ import com.github.twitch4j.chat.TwitchChat;
 import com.github.twitch4j.chat.events.CommandEvent;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
-import com.github.twitch4j.kraken.domain.KrakenTeam;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,11 +42,10 @@ public class JitterShoutOutBot {
                                    .shoutOutEnabled(true)
                                    .build();
 
-    KrakenTeam krakenTeam = twitchClient.getKraken().getTeamByName(TEAM_NAME).execute();
+    TeamFetcher teamFetcher = new TwitchTeamFetcher(twitchClient.getKraken(), TEAM_NAME);
+    shouter = new Shouter(messageSender, new Twitch4JTwitchTeam(teamFetcher), botStatus);
 
-    shouter = new Shouter(messageSender, krakenTeam, botStatus);
-
-    botCommandHandler = new BotCommandHandler(messageSender, krakenTeam, botStatus, new DefaultPermissionChecker());
+    botCommandHandler = new BotCommandHandler(messageSender, botStatus, new DefaultPermissionChecker());
   }
 
   @NotNull
@@ -93,7 +91,6 @@ public class JitterShoutOutBot {
 
   private void onChannelMessage(ChannelMessageEvent channelMessageEvent) {
     UserId userId = new UserId(channelMessageEvent.getUser().getId());
-    log.info(channelMessageEvent.getPermissions().toString());
     shouter.shoutOutTo(userId);
   }
 

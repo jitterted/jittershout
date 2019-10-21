@@ -5,7 +5,6 @@ import com.github.twitch4j.kraken.domain.KrakenTeamUser;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -16,13 +15,8 @@ public class ShouterTest {
   @Test
   public void userNotInTeamMeansNoShoutOut() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
-    KrakenTeam team = new KrakenTeam();
-    team.setUsers(Collections.emptyList());
 
-    Shouter shouter = new Shouter(senderSpy, team, new BotStatus(true));
-    // resetting the spy to make sure that anything that might have been sent
-    // during construction is ignored by this test
-    reset(senderSpy);
+    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(false), new BotStatus(true));
 
     shouter.shoutOutTo(UserId.from(0L));
 
@@ -32,33 +26,19 @@ public class ShouterTest {
   @Test
   public void userInTeamTriggersShoutOutToThatUser() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
-    KrakenTeam team = new KrakenTeam();
-    team.setDisplayName("Live Coders");
-    KrakenTeamUser teamUser = new KrakenTeamUser();
-    teamUser.setDisplayName("JitterTed");
-    teamUser.setUrl("https://twitch.tv/jitterted");
-    teamUser.setId(37L);
-    team.setUsers(List.of(teamUser));
 
-    Shouter shouter = new Shouter(senderSpy, team, new BotStatus(true));
+    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
 
     shouter.shoutOutTo(UserId.from(37L));
 
-    verify(senderSpy).send("Hey, it's JitterTed, a member of the Live Coders team! Check out their stream at https://twitch.tv/jitterted");
+    verify(senderSpy).send("Hey, it's JitterTed, a member of the stub team! Check out their stream at https://twitch.tv/jitterted");
   }
 
   @Test
   public void userInTeamGetsShoutedAtOnlyOnce() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
-    KrakenTeam team = new KrakenTeam();
-    KrakenTeamUser user = new KrakenTeamUser();
-    user.setId(73L);
-    team.setUsers(List.of(user));
 
-    Shouter shouter = new Shouter(senderSpy, team, new BotStatus(true));
-    // resetting the spy to make sure that anything that might have been sent
-    // during construction is ignored by this test
-    reset(senderSpy);
+    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
 
     shouter.shoutOutTo(UserId.from(73L));
     shouter.shoutOutTo(UserId.from(73L));
@@ -77,13 +57,37 @@ public class ShouterTest {
 
     BotStatus botStatus = BotStatus.builder().shoutOutEnabled(false).build();
 
-    Shouter shouter = new Shouter(senderSpy, team, botStatus);
-    // resetting the spy to make sure that anything that might have been sent
-    // during construction is ignored by this test
-    reset(senderSpy);
+    Shouter shouter = new Shouter(senderSpy, new StubTwitchTeam(false), botStatus);
 
     shouter.shoutOutTo(UserId.from(57L));
 
     verify(senderSpy, never()).send(any());
+  }
+
+  private static class StubTwitchTeam implements TwitchTeam {
+    private final boolean defaultIsMember;
+
+    public StubTwitchTeam(boolean defaultIsMember) {
+      this.defaultIsMember = defaultIsMember;
+    }
+
+    @Override
+    public String name() {
+      return "stub";
+    }
+
+    @Override
+    public boolean isMember(UserId userId) {
+      return defaultIsMember;
+    }
+
+    @Override
+    public void refresh() {
+    }
+
+    @Override
+    public TwitchUser userById(UserId userId) {
+      return new TwitchUser(userId, "JitterTed", "https://twitch.tv/jitterted");
+    }
   }
 }

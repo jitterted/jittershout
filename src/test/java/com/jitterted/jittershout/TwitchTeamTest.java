@@ -16,7 +16,7 @@ public class TwitchTeamTest {
     KrakenTeam krakenTeam = new KrakenTeam();
     krakenTeam.setName("shortname");
     krakenTeam.setUsers(Collections.emptyList());
-    TwitchTeam twitchTeam = new TwitchTeam(new StubTeamFetcher(krakenTeam));
+    TwitchTeam twitchTeam = new Twitch4JTwitchTeam(new StubTeamFetcher(krakenTeam));
 
     assertThat(twitchTeam.name())
         .isEqualTo("shortname");
@@ -28,7 +28,7 @@ public class TwitchTeamTest {
     krakenTeam.setName("shortname");
     krakenTeam.setDisplayName("The Display Name");
     krakenTeam.setUsers(Collections.emptyList());
-    TwitchTeam twitchTeam = new TwitchTeam(new StubTeamFetcher(krakenTeam));
+    TwitchTeam twitchTeam = new Twitch4JTwitchTeam(new StubTeamFetcher(krakenTeam));
 
     assertThat(twitchTeam.name())
         .isEqualTo("The Display Name");
@@ -38,7 +38,7 @@ public class TwitchTeamTest {
   public void emptyTeamMeansNoUserIsMemberOfTeam() throws Exception {
     KrakenTeam krakenTeam = new KrakenTeam();
     krakenTeam.setUsers(Collections.emptyList());
-    TwitchTeam twitchTeam = new TwitchTeam(new StubTeamFetcher(krakenTeam));
+    TwitchTeam twitchTeam = new Twitch4JTwitchTeam(new StubTeamFetcher(krakenTeam));
 
     assertThat(twitchTeam.isMember(UserId.from(1L)))
         .isFalse();
@@ -50,7 +50,7 @@ public class TwitchTeamTest {
     KrakenTeamUser teamUser = new KrakenTeamUser();
     teamUser.setId(31L);
     krakenTeam.setUsers(List.of(teamUser));
-    TwitchTeam twitchTeam = new TwitchTeam(new StubTeamFetcher(krakenTeam));
+    TwitchTeam twitchTeam = new Twitch4JTwitchTeam(new StubTeamFetcher(krakenTeam));
 
     assertThat(twitchTeam.isMember(UserId.from(31L)))
         .isTrue();
@@ -62,7 +62,7 @@ public class TwitchTeamTest {
     KrakenTeamUser teamUser = new KrakenTeamUser();
     teamUser.setId(11L);
     krakenTeam.setUsers(List.of(teamUser));
-    TwitchTeam twitchTeam = new TwitchTeam(new StubTeamFetcher(krakenTeam));
+    TwitchTeam twitchTeam = new Twitch4JTwitchTeam(new StubTeamFetcher(krakenTeam));
 
     assertThat(twitchTeam.isMember(UserId.from(13L)))
         .isFalse();
@@ -74,7 +74,7 @@ public class TwitchTeamTest {
     KrakenTeamUser teamUser = new KrakenTeamUser();
     teamUser.setId(11L);
     krakenTeam.setUsers(List.of(teamUser));
-    TwitchTeam twitchTeam = new TwitchTeam(new StubTeamFetcher(krakenTeam));
+    TwitchTeam twitchTeam = new Twitch4JTwitchTeam(new StubTeamFetcher(krakenTeam));
 
     KrakenTeamUser newTeamUser = new KrakenTeamUser();
     newTeamUser.setId(17L);
@@ -85,17 +85,22 @@ public class TwitchTeamTest {
         .isTrue();
   }
 
-  static class StubTeamFetcher implements TeamFetcher {
+  @Test
+  public void nameAndUrlForUserReturnedForUserId() throws Exception {
+    KrakenTeam krakenTeam = new KrakenTeam();
+    KrakenTeamUser teamUser = new KrakenTeamUser();
+    teamUser.setDisplayName("JitterTed");
+    teamUser.setUrl("https://twitch.tv/jitterted");
+    teamUser.setId(97L);
+    krakenTeam.setUsers(List.of(teamUser));
+    TwitchTeam twitchTeam = new Twitch4JTwitchTeam(new StubTeamFetcher(krakenTeam));
 
-    private final KrakenTeam krakenTeam;
+    TwitchUser twitchUser = twitchTeam.userById(UserId.from(97L));
 
-    public StubTeamFetcher(KrakenTeam krakenTeam) {
-      this.krakenTeam = krakenTeam;
-    }
-
-    @Override
-    public KrakenTeam fetch() {
-      return krakenTeam;
-    }
+    assertThat(twitchUser.name())
+        .isEqualTo("JitterTed");
+    assertThat(twitchUser.url())
+        .isEqualTo("https://twitch.tv/jitterted");
   }
+
 }
