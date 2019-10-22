@@ -1,4 +1,4 @@
-package com.jitterted.jittershout;
+package com.jitterted.jittershout.adapter.twitch4j;
 
 import com.github.twitch4j.common.enums.CommandPermission;
 

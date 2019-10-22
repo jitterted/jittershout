@@ -8,6 +8,17 @@ import com.github.twitch4j.chat.TwitchChat;
 import com.github.twitch4j.chat.events.CommandEvent;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
+import com.jitterted.jittershout.adapter.twitch4j.BotCommandHandler;
+import com.jitterted.jittershout.adapter.twitch4j.DefaultPermissionChecker;
+import com.jitterted.jittershout.adapter.twitch4j.TeamFetcher;
+import com.jitterted.jittershout.adapter.twitch4j.Twitch4JTwitchTeam;
+import com.jitterted.jittershout.adapter.twitch4j.TwitchChatMessageSender;
+import com.jitterted.jittershout.adapter.twitch4j.TwitchProperties;
+import com.jitterted.jittershout.adapter.twitch4j.TwitchTeamFetcher;
+import com.jitterted.jittershout.domain.BotStatus;
+import com.jitterted.jittershout.domain.DefaultShouter;
+import com.jitterted.jittershout.domain.Shouter;
+import com.jitterted.jittershout.domain.UserId;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,9 +51,7 @@ public class JitterShoutOutBot {
 
     messageSender = new TwitchChatMessageSender(twitchChat, CHANNEL_NAME);
 
-    BotStatus botStatus = BotStatus.builder()
-                                   .shoutOutEnabled(true)
-                                   .build();
+    BotStatus botStatus = new BotStatus(true);
 
     TeamFetcher teamFetcher = new TwitchTeamFetcher(twitchClient.getKraken(), TEAM_NAME);
     twitchTeam = new Twitch4JTwitchTeam(teamFetcher);

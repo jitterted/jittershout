@@ -1,6 +1,8 @@
 package com.jitterted.jittershout;
 
 import com.github.twitch4j.common.enums.CommandPermission;
+import com.jitterted.jittershout.adapter.twitch4j.DefaultPermissionChecker;
+import com.jitterted.jittershout.adapter.twitch4j.PermissionChecker;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;

@@ -1,4 +1,4 @@
-package com.jitterted.jittershout;
+package com.jitterted.jittershout.domain;
 
 public interface Shouter {
   void shoutOutTo(UserId id);

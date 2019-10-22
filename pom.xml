@@ -33,6 +33,7 @@
     <mockito.version>2.23.4</mockito.version>
     <lombok.version>1.18.10</lombok.version>
     <twitch4j.version>1.0.0-alpha.17</twitch4j.version>
+    <archunit.version>0.11.0</archunit.version>
   </properties>
 
   <repositories>
@@ -123,6 +124,20 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit-jupiter-version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!--  ArchUnit for JUnit 5  -->
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5-api</artifactId>
+      <version>${archunit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5-engine</artifactId>
+      <version>${archunit.version}</version>
       <scope>test</scope>
     </dependency>
 

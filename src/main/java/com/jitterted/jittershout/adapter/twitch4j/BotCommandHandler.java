@@ -1,6 +1,9 @@
-package com.jitterted.jittershout;
+package com.jitterted.jittershout.adapter.twitch4j;
 
 import com.github.twitch4j.chat.events.CommandEvent;
+import com.jitterted.jittershout.domain.BotStatus;
+import com.jitterted.jittershout.domain.MessageSender;
+import com.jitterted.jittershout.domain.Shouter;
 import org.jetbrains.annotations.NotNull;
 
 public class BotCommandHandler {

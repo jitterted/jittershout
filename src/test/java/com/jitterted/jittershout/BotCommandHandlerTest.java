@@ -1,6 +1,12 @@
 package com.jitterted.jittershout;
 
 import com.github.twitch4j.chat.events.CommandEvent;
+import com.jitterted.jittershout.adapter.twitch4j.BotCommandHandler;
+import com.jitterted.jittershout.adapter.twitch4j.PermissionChecker;
+import com.jitterted.jittershout.domain.BotStatus;
+import com.jitterted.jittershout.domain.MessageSender;
+import com.jitterted.jittershout.domain.Shouter;
+import com.jitterted.jittershout.domain.UserId;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

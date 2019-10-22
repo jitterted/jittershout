@@ -2,6 +2,10 @@ package com.jitterted.jittershout;
 
 import com.github.twitch4j.kraken.domain.KrakenTeam;
 import com.github.twitch4j.kraken.domain.KrakenTeamUser;
+import com.jitterted.jittershout.adapter.twitch4j.Twitch4JTwitchTeam;
+import com.jitterted.jittershout.domain.TwitchTeam;
+import com.jitterted.jittershout.domain.TwitchUser;
+import com.jitterted.jittershout.domain.UserId;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

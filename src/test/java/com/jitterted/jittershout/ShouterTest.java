@@ -1,10 +1,19 @@
 package com.jitterted.jittershout;
 
+import com.jitterted.jittershout.domain.BotStatus;
+import com.jitterted.jittershout.domain.DefaultShouter;
+import com.jitterted.jittershout.domain.MessageSender;
+import com.jitterted.jittershout.domain.Shouter;
+import com.jitterted.jittershout.domain.TwitchTeam;
+import com.jitterted.jittershout.domain.TwitchUser;
+import com.jitterted.jittershout.domain.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ShouterTest {
 

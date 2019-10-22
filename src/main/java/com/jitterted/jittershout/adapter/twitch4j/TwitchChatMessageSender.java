@@ -1,6 +1,7 @@
-package com.jitterted.jittershout;
+package com.jitterted.jittershout.adapter.twitch4j;
 
 import com.github.twitch4j.chat.TwitchChat;
+import com.jitterted.jittershout.domain.MessageSender;
 
 public class TwitchChatMessageSender implements MessageSender {
   private final TwitchChat twitchChat;
