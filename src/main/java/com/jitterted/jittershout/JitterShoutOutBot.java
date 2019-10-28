@@ -34,16 +34,11 @@ public class JitterShoutOutBot {
   private BotCommandHandler botCommandHandler;
   private TwitchTeam twitchTeam;
   private TwitchChatMessageSender messageSender;
-  private static JitterShoutOutBot jitterShoutOutBot;
 
   public static void main(String[] args) {
     TwitchProperties twitchProperties = TwitchProperties.loadProperties();
-    jitterShoutOutBot = new JitterShoutOutBot();
+    JitterShoutOutBot jitterShoutOutBot = new JitterShoutOutBot();
     jitterShoutOutBot.connect(twitchProperties);
-  }
-
-  public static JitterShoutOutBot instance() {
-    return jitterShoutOutBot;
   }
 
   public String status() {
