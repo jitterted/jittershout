@@ -8,4 +8,6 @@ public interface TwitchTeam {
   void refresh();
 
   TwitchUser userById(UserId userId);
+
+  int count();
 }

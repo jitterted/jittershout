@@ -8,16 +8,17 @@ import com.github.twitch4j.chat.TwitchChat;
 import com.github.twitch4j.chat.events.CommandEvent;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
-import com.jitterted.jittershout.adapter.twitch4j.BotCommandHandler;
-import com.jitterted.jittershout.adapter.twitch4j.DefaultPermissionChecker;
-import com.jitterted.jittershout.adapter.twitch4j.TeamFetcher;
-import com.jitterted.jittershout.adapter.twitch4j.Twitch4JTwitchTeam;
-import com.jitterted.jittershout.adapter.twitch4j.TwitchChatMessageSender;
-import com.jitterted.jittershout.adapter.twitch4j.TwitchProperties;
-import com.jitterted.jittershout.adapter.twitch4j.TwitchTeamFetcher;
+import com.jitterted.jittershout.adapter.triggering.twitch4j.BotCommandHandler;
+import com.jitterted.jittershout.adapter.triggering.twitch4j.DefaultPermissionChecker;
+import com.jitterted.jittershout.adapter.triggering.twitch4j.TeamFetcher;
+import com.jitterted.jittershout.adapter.triggering.twitch4j.Twitch4JTwitchTeam;
+import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchChatMessageSender;
+import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchProperties;
+import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchTeamFetcher;
 import com.jitterted.jittershout.domain.BotStatus;
 import com.jitterted.jittershout.domain.DefaultShouter;
 import com.jitterted.jittershout.domain.Shouter;
+import com.jitterted.jittershout.domain.TwitchTeam;
 import com.jitterted.jittershout.domain.UserId;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -31,13 +32,22 @@ public class JitterShoutOutBot {
   private TwitchChat twitchChat;
   private Shouter shouter;
   private BotCommandHandler botCommandHandler;
-  private Twitch4JTwitchTeam twitchTeam;
+  private TwitchTeam twitchTeam;
   private TwitchChatMessageSender messageSender;
+  private static JitterShoutOutBot jitterShoutOutBot;
 
   public static void main(String[] args) {
     TwitchProperties twitchProperties = TwitchProperties.loadProperties();
-    JitterShoutOutBot jitterShoutOutBot = new JitterShoutOutBot();
+    jitterShoutOutBot = new JitterShoutOutBot();
     jitterShoutOutBot.connect(twitchProperties);
+  }
+
+  public static JitterShoutOutBot instance() {
+    return jitterShoutOutBot;
+  }
+
+  public String status() {
+    return twitchTeam.name() + " has " + twitchTeam.count() + " members.";
   }
 
   public void connect(TwitchProperties twitchProperties) {

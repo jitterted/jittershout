@@ -1,4 +1,4 @@
-package com.jitterted.jittershout.adapter.twitch4j;
+package com.jitterted.jittershout.adapter.triggering.twitch4j;
 
 import com.github.twitch4j.kraken.domain.KrakenTeam;
 import com.github.twitch4j.kraken.domain.KrakenTeamUser;
@@ -41,6 +41,11 @@ public class Twitch4JTwitchTeam implements TwitchTeam {
   @Override
   public TwitchUser userById(UserId userId) {
     return twitchUsers.get(userId);
+  }
+
+  @Override
+  public int count() {
+    return twitchUsers.size();
   }
 
   @NotNull

@@ -100,5 +100,10 @@ public class ShouterTest {
     public TwitchUser userById(UserId userId) {
       return new TwitchUser(userId, "JitterTed", "https://twitch.tv/jitterted");
     }
+
+    @Override
+    public int count() {
+      return 1;
+    }
   }
 }

@@ -1,4 +1,4 @@
-package com.jitterted.jittershout.adapter.twitch4j;
+package com.jitterted.jittershout.adapter.triggering.twitch4j;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

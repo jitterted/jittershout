@@ -1,4 +1,4 @@
-package com.jitterted.jittershout.adapter.twitch4j;
+package com.jitterted.jittershout.adapter.triggering.twitch4j;
 
 import com.github.twitch4j.chat.events.CommandEvent;
 import com.jitterted.jittershout.domain.BotStatus;
