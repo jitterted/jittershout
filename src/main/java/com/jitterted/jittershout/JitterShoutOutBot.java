@@ -35,14 +35,14 @@ public class JitterShoutOutBot {
   private TwitchTeam twitchTeam;
   private TwitchChatMessageSender messageSender;
 
-  public static JitterShoutOutBot create() {
+  public static JitterShoutOutBot create(BotStatus botStatus) {
     TwitchProperties twitchProperties = TwitchProperties.loadProperties();
     JitterShoutOutBot jitterShoutOutBot = new JitterShoutOutBot();
-    jitterShoutOutBot.connect(twitchProperties);
+    jitterShoutOutBot.connect(twitchProperties, botStatus);
     return jitterShoutOutBot;
   }
 
-  private void connect(TwitchProperties twitchProperties) {
+  private void connect(TwitchProperties twitchProperties, BotStatus botStatus) {
     TwitchClient twitchClient = createTwitchClient(twitchProperties);
 
     registerEventHandlers(twitchClient.getEventManager());
@@ -52,8 +52,6 @@ public class JitterShoutOutBot {
     twitchChat.sendMessage(CHANNEL_NAME, "The JitterChat ShoutBot is here!");
 
     messageSender = new TwitchChatMessageSender(twitchChat, CHANNEL_NAME);
-
-    BotStatus botStatus = new BotStatus(true);
 
     TeamFetcher teamFetcher = new TwitchTeamFetcher(twitchClient.getKraken(), TEAM_NAME);
     twitchTeam = new Twitch4JTwitchTeam(teamFetcher);
