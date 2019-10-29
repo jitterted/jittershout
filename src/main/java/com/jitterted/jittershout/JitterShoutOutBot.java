@@ -35,17 +35,14 @@ public class JitterShoutOutBot {
   private TwitchTeam twitchTeam;
   private TwitchChatMessageSender messageSender;
 
-  public static void main(String[] args) {
+  public static JitterShoutOutBot create() {
     TwitchProperties twitchProperties = TwitchProperties.loadProperties();
     JitterShoutOutBot jitterShoutOutBot = new JitterShoutOutBot();
     jitterShoutOutBot.connect(twitchProperties);
+    return jitterShoutOutBot;
   }
 
-  public String status() {
-    return twitchTeam.name() + " has " + twitchTeam.count() + " members.";
-  }
-
-  public void connect(TwitchProperties twitchProperties) {
+  private void connect(TwitchProperties twitchProperties) {
     TwitchClient twitchClient = createTwitchClient(twitchProperties);
 
     registerEventHandlers(twitchClient.getEventManager());
@@ -64,6 +61,10 @@ public class JitterShoutOutBot {
     shouter = new DefaultShouter(messageSender, twitchTeam, botStatus);
 
     botCommandHandler = new BotCommandHandler(messageSender, botStatus, new DefaultPermissionChecker(), shouter);
+  }
+
+  public TwitchTeam twitchTeam() {
+    return twitchTeam;
   }
 
   @NotNull
@@ -113,5 +114,4 @@ public class JitterShoutOutBot {
     UserId userId = new UserId(channelMessageEvent.getUser().getId());
     shouter.shoutOutTo(userId);
   }
-
 }
