@@ -16,7 +16,7 @@ public class BotController {
 
   @GetMapping("/api/botinfo")
   public BotInfoDto botInfo() {
-    String shoutOutState = botStatus.isShoutOutEnabled() ? "active" : "inactive";
-    return new BotInfoDto(shoutOutState);
+    return new BotInfoDto(botStatus.isShoutOutActive());
   }
+
 }

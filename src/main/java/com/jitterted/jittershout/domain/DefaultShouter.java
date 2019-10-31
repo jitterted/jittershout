@@ -17,7 +17,7 @@ public class DefaultShouter implements Shouter {
 
   @Override
   public void shoutOutTo(UserId id) {
-    if (!botStatus.isShoutOutEnabled()) {
+    if (!botStatus.isShoutOutActive()) {
       return;
     }
     if (twitchTeam.isMember(id)) {

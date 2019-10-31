@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class BotStatus {
-  private boolean shoutOutEnabled;
+  private boolean shoutOutActive;
 }

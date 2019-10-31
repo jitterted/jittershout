@@ -1,6 +1,7 @@
 package com.jitterted.jittershout.adapter.triggering.api;
 
 import com.jitterted.jittershout.domain.BotStatus;
+import com.jitterted.jittershout.domain.TwitchTeam;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,18 @@ public class BotInfoIntegrationTest {
   @MockBean
   private BotStatus botStatus;
 
+  // overrides/replaces the @Bean instantiation in JitterShoutApplication
+  // that way we don't start up the actual chat bot every time this test runs
+  @MockBean
+  private TwitchTeam twitchTeam;
+
   @Test
   public void getOfTeamInfoReturnsValidTeamInfoJson(@Autowired MockMvc mockMvc) throws Exception {
-    Mockito.when(botStatus.isShoutOutEnabled()).thenReturn(true);
+    Mockito.when(botStatus.isShoutOutActive()).thenReturn(true);
 
     mockMvc.perform(get("/api/botinfo")
                         .accept(MediaType.APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.shoutOutState", is("active")));
+           .andExpect(jsonPath("$.shoutOutActive", is(true)));
   }
 }

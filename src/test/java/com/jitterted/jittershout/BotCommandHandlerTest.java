@@ -57,7 +57,7 @@ public class BotCommandHandlerTest {
 
     botCommandHandler.handle(createCommandWithText(command));
 
-    assertThat(botStatus.isShoutOutEnabled())
+    assertThat(botStatus.isShoutOutActive())
         .isEqualTo(expectedEnabled);
   }
 

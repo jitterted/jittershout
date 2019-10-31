@@ -61,7 +61,7 @@ public class BotCommandHandler {
   }
 
   private void changeShoutOutTo(boolean enabled) {
-    botStatus.setShoutOutEnabled(enabled);
+    botStatus.setShoutOutActive(enabled);
     messageSender.send("Shout-out is now %s".formatted(shoutOutStatusAsText()));
   }
 
@@ -71,7 +71,7 @@ public class BotCommandHandler {
 
   @NotNull
   private String shoutOutStatusAsText() {
-    return botStatus.isShoutOutEnabled() ? "on" : "off";
+    return botStatus.isShoutOutActive() ? "on" : "off";
   }
 
 }

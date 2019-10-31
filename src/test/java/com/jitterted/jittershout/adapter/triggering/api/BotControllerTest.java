@@ -14,8 +14,8 @@ public class BotControllerTest {
 
     BotInfoDto botInfoDto = botController.botInfo();
 
-    assertThat(botInfoDto.getShoutOutState())
-        .isEqualTo("active");
+    assertThat(botInfoDto.isShoutOutActive())
+        .isEqualTo(true);
   }
 
   @Test
@@ -25,7 +25,7 @@ public class BotControllerTest {
 
     BotInfoDto botInfoDto = botController.botInfo();
 
-    assertThat(botInfoDto.getShoutOutState())
-        .isEqualTo("inactive");
+    assertThat(botInfoDto.isShoutOutActive())
+        .isEqualTo(false);
   }
 }

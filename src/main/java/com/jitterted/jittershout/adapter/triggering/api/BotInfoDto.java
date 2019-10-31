@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class BotInfoDto {
-  private final String shoutOutState;
+  private final boolean shoutOutActive;
 }

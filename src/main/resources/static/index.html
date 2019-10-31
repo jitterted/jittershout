@@ -22,7 +22,7 @@ window.onload = function () {
     el: '#app',
     data: {
       team: null,
-      bot: {shoutOutState: 'unknown'},
+      bot: {shoutOutActive: false},
       loading: true,
       errored: false
     },
@@ -40,7 +40,7 @@ window.onload = function () {
         .then(response => (this.bot = response.data))
         .catch(error => {
           console.log(error);
-          this.bot.shoutOutState = 'error'
+          this.bot.shoutOutActive = 'error'
         });
     }
   })
@@ -74,7 +74,7 @@ window.onload = function () {
       <div class="tile is-child notification is-info">
         <h2 class="title">Bot Controls</h2>
         <div class="container">
-          <p class="subtitle is-4">Shout-Out: {{ bot.shoutOutState }}
+          <p class="subtitle is-4">Shout-Out: {{ bot.shoutOutActive }}
             <span class="buttons has-addons">
             <button class="button is-success is-selected is-inverted">ON</button>
             <button class="button is-danger is-inverted">OFF</button>
