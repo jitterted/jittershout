@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,13 +29,29 @@ public class BotInfoIntegrationTest {
   @MockBean
   private TwitchTeam twitchTeam;
 
+  @Autowired
+  private MockMvc mockMvc;
+
   @Test
-  public void getOfTeamInfoReturnsValidTeamInfoJson(@Autowired MockMvc mockMvc) throws Exception {
+  public void getBotInfoReturnsShoutOutActiveStateJson() throws Exception {
     Mockito.when(botStatus.isShoutOutActive()).thenReturn(true);
 
     mockMvc.perform(get("/api/botinfo")
                         .accept(MediaType.APPLICATION_JSON))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.shoutOutActive", is(true)));
+  }
+
+  @Test
+  public void postBotInfoChangesActiveState() throws Exception {
+    mockMvc.perform(post("/api/botinfo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                     {"shoutOutActive": false}
+                                     """))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.shoutOutActive", is(false)));
+
+    Mockito.verify(botStatus).setShoutOutActive(false);
   }
 }
