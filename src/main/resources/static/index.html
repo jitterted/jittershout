@@ -44,7 +44,11 @@ window.onload = function () {
     }
   });
 
-  var app = new Vue({
+  const axiosApi = axios.create({
+    baseURL: '/api/'
+  });
+
+  const app = new Vue({
     el: '#app',
     data: {
       team: null,
@@ -53,24 +57,37 @@ window.onload = function () {
       errored: false
     },
     mounted() {
-      axios
-        .get('/api/teaminfo')
-        .then(response => (this.team = response.data))
-        .catch(error => {
-          console.log(error);
-          this.errored = true;
-        })
-        .finally(() => this.loading = false);
-      axios
-        .get('/api/botinfo')
-        .then(response => (this.bot = response.data))
-        .catch(error => (console.log(error)));
+      this.loadTeamInfo();
+      this.loadBotStatus();
     },
     methods: {
       updateShoutOutState: function (event) {
-        console.log("New shout out active state is " + this.bot.shoutOutActive);
-        axios.post('/api/botinfo', this.bot)
+        axiosApi
+          .post('botinfo', this.bot)
           .then(response => (console.log(response)))
+          .catch(error => (console.log(error)));
+      },
+      refreshTeam: function (event) {
+        axiosApi
+          .post('refresh-team')
+          .then(response => (this.loadTeamInfo()))
+          .catch(error => (console.log(error)));
+      },
+      loadTeamInfo: function () {
+        this.loading = true;
+        axiosApi
+          .get('teaminfo')
+          .then(response => (this.team = response.data))
+          .catch(error => {
+            console.log(error);
+            this.errored = true;
+          })
+          .finally(() => this.loading = false);
+      },
+      loadBotStatus: function () {
+        axiosApi
+          .get('botinfo')
+          .then(response => (this.bot = response.data))
           .catch(error => (console.log(error)));
       }
     }
@@ -80,39 +97,44 @@ window.onload = function () {
 
 //]]></script>
 
-<section id="app" class="section">
-  <h1 class="title">JitterShout - The Twitch Team Shout-Out Bot</h1>
+<section class="section">
+  <div id="app">
+    <div v-cloak>
+      <h1 class="title">JitterShout - The Twitch Team Shout-Out Bot</h1>
 
-  <div class="tile is-ancestor">
-    <div class="tile is-parent">
-      <div class="tile is-child notification is-primary">
-        <h2 class="title">Team Information</h2>
+      <div class="tile is-ancestor">
+        <div class="tile is-parent">
+          <div class="tile is-child notification is-primary">
+            <h2 class="title">Team Information</h2>
 
-        <div v-if="errored" class="container notification is-warning">
-          <p class="subtitle is-5">Sorry, can't get the Team Info right now.</p>
+            <div v-if="errored" class="container notification is-warning">
+              <p class="subtitle is-5">Sorry, can't get the Team Info right now.</p>
+            </div>
+
+            <div v-else class="container">
+              <div v-if="loading"><p>Loading Team Info...</p></div>
+
+              <div v-else>
+                <p class="subtitle is-4">The team {{ team.name }} has {{ team.count }} team members.</p>
+                <button class="button is-primary is-light" @click="refreshTeam">Refresh Team</button>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div v-else class="container">
-          <div v-if="loading"><p>Loading Team Info...</p></div>
-
-          <div v-else>
-            <p class="subtitle is-4">The team {{ team.name }} has {{ team.count }} team members.</p>
+        <div class="tile is-parent">
+          <div class="tile is-child notification is-info">
+            <h2 class="title">Bot Controls</h2>
+            <div class="container">
+              <p class="subtitle is-4">Shout-Out: {{ bot.shoutOutActive }}
+              </p>
+              <Toggle v-model="bot.shoutOutActive" @input="updateShoutOutState"/>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="tile is-parent">
-      <div class="tile is-child notification is-info">
-        <h2 class="title">Bot Controls</h2>
-        <div class="container">
-          <p class="subtitle is-4">Shout-Out: {{ bot.shoutOutActive }}
-          </p>
-          <Toggle v-model="bot.shoutOutActive" @input="updateShoutOutState"/>
-        </div>
-      </div>
+
     </div>
   </div>
-
 </section>
 
 </body>
