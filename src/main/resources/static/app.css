@@ -1,0 +1,50 @@
+[v-cloak] {
+    display: none;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+    transition: 2s;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: 0.5s;
+}
+
+.slide-enter {
+    opacity: 0;
+    transform: scale3d(2, 0.5, 1) translate3d(400px, 0, 0);
+}
+
+.slide-enter-to {
+    transform: scale3d(1, 1, 1);
+}
+
+.slide-enter-active,
+.slide-leave-active {
+    transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.slide-leave {
+    transform: scale3d(1, 1, 1);
+}
+
+.slide-leave-to {
+    opacity: 0;
+    transform: scale3d(2, 0.5, 1) translate3d(-400px, 0, 0);
+}
+
+.rotate-enter {
+    transform: perspective(500px) rotate3d(0, 1, 0, 90deg);
+}
+
+.rotate-enter-active,
+.rotate-leave-active {
+    transition: 0.5s;
+}
+
+.rotate-leave-to {
+    transform: perspective(500px) rotate3d(0, 1, 0, -90deg);
+}
