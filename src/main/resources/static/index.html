@@ -112,12 +112,14 @@ window.onload = function () {
             </div>
 
             <div v-else class="container">
-              <div v-if="loading"><p>Loading Team Info...</p></div>
+              <transition name="rotate" mode="out-in">
+                <div key="loadinginfo" v-if="loading"><p>Loading Team Info...</p></div>
 
-              <div v-else>
-                <p class="subtitle is-4">The team {{ team.name }} has {{ team.count }} team members.</p>
-                <button class="button is-primary is-light" @click="refreshTeam">Refresh Team</button>
-              </div>
+                <div key="loadedinfo" v-else>
+                  <p class="subtitle is-4">The team {{ team.name }} has {{ team.count }} team members.</p>
+                  <button class="button is-primary is-light" @click="refreshTeam">Refresh Team</button>
+                </div>
+              </transition>
             </div>
           </div>
         </div>
