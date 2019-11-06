@@ -1,6 +1,8 @@
 package com.jitterted.jittershout.adapter.triggering.api;
 
+import com.jitterted.jittershout.domain.BotStatus;
 import com.jitterted.jittershout.domain.TwitchTeam;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +15,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class TeamInfoIntegrationTest {
+@Tag("integration")
+public class BotInfoIntegrationTest {
 
+  @MockBean
+  private BotStatus botStatus;
+
+  // overrides/replaces the @Bean instantiation in JitterShoutApplication
+  // that way we don't start up the actual chat bot every time this test runs
   @MockBean
   private TwitchTeam twitchTeam;
 
@@ -28,22 +35,26 @@ public class TeamInfoIntegrationTest {
   private MockMvc mockMvc;
 
   @Test
-  public void getOfTeamInfoReturnsValidTeamInfoJson() throws Exception {
-    Mockito.when(twitchTeam.name()).thenReturn("team name");
-    Mockito.when(twitchTeam.count()).thenReturn(91);
+  public void getBotInfoReturnsShoutOutStateJson() throws Exception {
+    Mockito.when(botStatus.isShoutOutActive()).thenReturn(true);
 
-    mockMvc.perform(get("/api/teaminfo")
+    mockMvc.perform(get("/api/botinfo")
                         .accept(MediaType.APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name", is("team name")))
-           .andExpect(jsonPath("$.count", is("91")));
+           .andExpect(jsonPath("$.shoutOutActive", is(true)))
+           .andExpect(jsonPath("$.shoutOutCount", is(3)));
   }
 
-
   @Test
-  public void postToRefreshTeamRefreshesTeam() throws Exception {
-    mockMvc.perform(post("/api/refresh-team"))
+  public void postBotInfoChangesActiveState() throws Exception {
+    mockMvc.perform(post("/api/botinfo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                     {"shoutOutActive": false}
+                                     """))
            .andExpect(status().isOk())
-           .andExpect(content().string("refreshed"));
+           .andExpect(jsonPath("$.shoutOutActive", is(false)));
+
+    Mockito.verify(botStatus).setShoutOutActive(false);
   }
 }

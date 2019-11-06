@@ -31,7 +31,10 @@ new Vue({
   el: '#app',
   data: {
     team: null,
-    bot: {shoutOutActive: false},
+    bot: {
+      shoutOutActive: false,
+      shoutOutCount: 0
+    },
     loading: true,
     errored: false
   },
@@ -40,19 +43,19 @@ new Vue({
     this.loadBotStatus();
   },
   methods: {
-    updateShoutOutState: function (event) {
+    updateShoutOutState(event) {
       axiosApi
         .post('botinfo', this.bot)
         .then(response => (console.log(response)))
         .catch(error => (console.log(error)));
     },
-    refreshTeam: function (event) {
+    refreshTeam(event) {
       axiosApi
         .post('refresh-team')
         .then(response => (this.loadTeamInfo()))
         .catch(error => (console.log(error)));
     },
-    loadTeamInfo: function () {
+    loadTeamInfo() {
       this.loading = true;
       axiosApi
         .get('teaminfo')
@@ -63,7 +66,7 @@ new Vue({
         })
         .finally(() => this.loading = false);
     },
-    loadBotStatus: function () {
+    loadBotStatus() {
       axiosApi
         .get('botinfo')
         .then(response => (this.bot = response.data))

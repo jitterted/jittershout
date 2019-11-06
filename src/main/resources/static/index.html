@@ -52,6 +52,9 @@
               <p class="subtitle is-4">Shout-Out:
                 <Toggle v-model="bot.shoutOutActive" @input="updateShoutOutState"/>
               </p>
+              <p class="subtitle is-4">
+                Bot has Shouted Out to {{ bot.shoutOutCount }} team members.
+              </p>
             </div>
           </div>
         </div>

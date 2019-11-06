@@ -55,7 +55,8 @@ public class ShouterTest {
   public void userInTeamDoesNotGetShoutOutIfShoutOutIsDisabled() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(false), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
+    shouter.changeShoutOutActiveTo(false);
 
     shouter.shoutOutTo(UserId.from(57L));
 

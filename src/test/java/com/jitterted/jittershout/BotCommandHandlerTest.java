@@ -148,5 +148,9 @@ public class BotCommandHandlerTest {
     public int shoutOutTrackingCount() {
       return count;
     }
+
+    @Override
+    public void changeShoutOutActiveTo(boolean isActive) {
+    }
   }
 }

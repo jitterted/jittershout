@@ -1,6 +1,7 @@
 package com.jitterted.jittershout.adapter.triggering.api;
 
 import com.jitterted.jittershout.domain.BotStatus;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,12 +19,17 @@ public class BotController {
 
   @GetMapping("/api/botinfo")
   public BotInfoDto botInfo() {
-    return new BotInfoDto(botStatus.isShoutOutActive());
+    return createBotInfoDto();
   }
 
   @PostMapping("/api/botinfo")
   public BotInfoDto updateBotState(@RequestBody BotInfoDto botInfoDto) {
     botStatus.setShoutOutActive(botInfoDto.isShoutOutActive());
-    return new BotInfoDto(botStatus.isShoutOutActive());
+    return createBotInfoDto();
+  }
+
+  @NotNull
+  private BotInfoDto createBotInfoDto() {
+    return new BotInfoDto(botStatus.isShoutOutActive(), 3);
   }
 }

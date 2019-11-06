@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BotInfoDto {
   private boolean shoutOutActive;
+  private int shoutOutCount;
 }

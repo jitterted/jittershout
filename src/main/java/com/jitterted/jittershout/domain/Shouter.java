@@ -6,4 +6,6 @@ public interface Shouter {
   void resetShoutOutTracking();
 
   int shoutOutTrackingCount();
+
+  void changeShoutOutActiveTo(boolean isActive);
 }

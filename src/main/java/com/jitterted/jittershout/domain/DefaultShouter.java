@@ -8,6 +8,7 @@ public class DefaultShouter implements Shouter {
   private final TwitchTeam twitchTeam;
   private final BotStatus botStatus;
   private final Set<UserId> shoutedOutAtUsers = new HashSet<>();
+  private boolean shoutOutActive = true;
 
   public DefaultShouter(MessageSender messageSender, TwitchTeam twitchTeam, BotStatus botStatus) {
     this.messageSender = messageSender;
@@ -17,7 +18,7 @@ public class DefaultShouter implements Shouter {
 
   @Override
   public void shoutOutTo(UserId id) {
-    if (!botStatus.isShoutOutActive()) {
+    if (!shoutOutActive) {
       return;
     }
     if (twitchTeam.isMember(id)) {
@@ -33,6 +34,11 @@ public class DefaultShouter implements Shouter {
   @Override
   public int shoutOutTrackingCount() {
     return shoutedOutAtUsers.size();
+  }
+
+  @Override
+  public void changeShoutOutActiveTo(boolean isActive) {
+    shoutOutActive = isActive;
   }
 
   private void sendShoutOut(UserId id) {
