@@ -6,14 +6,12 @@ import java.util.Set;
 public class DefaultShouter implements Shouter {
   private final MessageSender messageSender;
   private final TwitchTeam twitchTeam;
-  private final BotStatus botStatus;
   private final Set<UserId> shoutedOutAtUsers = new HashSet<>();
   private boolean shoutOutActive = true;
 
-  public DefaultShouter(MessageSender messageSender, TwitchTeam twitchTeam, BotStatus botStatus) {
+  public DefaultShouter(MessageSender messageSender, TwitchTeam twitchTeam) {
     this.messageSender = messageSender;
     this.twitchTeam = twitchTeam;
-    this.botStatus = botStatus;
   }
 
   @Override
@@ -39,6 +37,11 @@ public class DefaultShouter implements Shouter {
   @Override
   public void changeShoutOutActiveTo(boolean isActive) {
     shoutOutActive = isActive;
+  }
+
+  @Override
+  public boolean isShoutOutActive() {
+    return shoutOutActive;
   }
 
   private void sendShoutOut(UserId id) {

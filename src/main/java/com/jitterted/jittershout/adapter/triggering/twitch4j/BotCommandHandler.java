@@ -1,7 +1,6 @@
 package com.jitterted.jittershout.adapter.triggering.twitch4j;
 
 import com.github.twitch4j.chat.events.CommandEvent;
-import com.jitterted.jittershout.domain.BotStatus;
 import com.jitterted.jittershout.domain.MessageSender;
 import com.jitterted.jittershout.domain.Shouter;
 import org.jetbrains.annotations.NotNull;
@@ -9,16 +8,13 @@ import org.jetbrains.annotations.NotNull;
 public class BotCommandHandler {
 
   private final MessageSender messageSender;
-  private final BotStatus botStatus;
   private final PermissionChecker permissionChecker;
   private final Shouter shouter;
 
   public BotCommandHandler(MessageSender messageSender,
-                           BotStatus botStatus,
                            PermissionChecker permissionChecker,
                            Shouter shouter) {
     this.messageSender = messageSender;
-    this.botStatus = botStatus;
     this.permissionChecker = permissionChecker;
     this.shouter = shouter;
   }
@@ -60,8 +56,8 @@ public class BotCommandHandler {
     messageSender.send("Shout-Out Tracking has been reset.");
   }
 
-  private void changeShoutOutTo(boolean enabled) {
-    botStatus.setShoutOutActive(enabled);
+  private void changeShoutOutTo(boolean active) {
+    shouter.changeShoutOutActiveTo(active);
     messageSender.send("Shout-out is now %s".formatted(shoutOutStatusAsText()));
   }
 
@@ -71,7 +67,7 @@ public class BotCommandHandler {
 
   @NotNull
   private String shoutOutStatusAsText() {
-    return botStatus.isShoutOutActive() ? "on" : "off";
+    return shouter.isShoutOutActive() ? "on" : "off";
   }
 
 }

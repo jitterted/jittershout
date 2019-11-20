@@ -1,6 +1,6 @@
 package com.jitterted.jittershout;
 
-import com.jitterted.jittershout.domain.BotStatus;
+import com.jitterted.jittershout.domain.Shouter;
 import com.jitterted.jittershout.domain.TwitchTeam;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,13 +14,18 @@ public class JitterShoutApplication {
 	}
 
 	@Bean
-	public TwitchTeam createTwitch4jTeam(BotStatus botStatus) {
-		JitterShoutOutBot jitterShoutOutBot = JitterShoutOutBot.create(botStatus);
+	public JitterShoutOutBot createBot() {
+		return JitterShoutOutBot.create();
+	}
+
+	@Bean
+	public TwitchTeam createTwitch4jTeam(JitterShoutOutBot jitterShoutOutBot) {
 		return jitterShoutOutBot.twitchTeam();
 	}
 
 	@Bean
-	public BotStatus createBotStatus() {
-		return new BotStatus(true);
+	public Shouter createShouter(JitterShoutOutBot jitterShoutOutBot) {
+		return jitterShoutOutBot.shouter();
 	}
+
 }

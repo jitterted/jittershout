@@ -1,5 +1,6 @@
 package com.jitterted.jittershout.adapter.triggering.api;
 
+import com.jitterted.jittershout.StubTwitchTeam;
 import com.jitterted.jittershout.domain.TwitchTeam;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,7 +16,7 @@ class TeamInfoControllerTest {
     TeamInfoDto teamInfoDto = teamInfoController.teamInfo();
 
     assertThat(teamInfoDto.getName())
-        .isEqualTo("some team name");
+        .isEqualTo("stub");
     assertThat(teamInfoDto.getCount())
         .isEqualTo("17");
   }

@@ -1,11 +1,8 @@
 package com.jitterted.jittershout;
 
-import com.jitterted.jittershout.domain.BotStatus;
 import com.jitterted.jittershout.domain.DefaultShouter;
 import com.jitterted.jittershout.domain.MessageSender;
 import com.jitterted.jittershout.domain.Shouter;
-import com.jitterted.jittershout.domain.TwitchTeam;
-import com.jitterted.jittershout.domain.TwitchUser;
 import com.jitterted.jittershout.domain.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,7 +18,7 @@ public class ShouterTest {
   public void userNotInTeamMeansNoShoutOut() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(false), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(false));
 
     shouter.shoutOutTo(UserId.from(0L));
 
@@ -32,7 +29,7 @@ public class ShouterTest {
   public void userInTeamTriggersShoutOutToThatUser() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true));
 
     shouter.shoutOutTo(UserId.from(37L));
 
@@ -43,7 +40,7 @@ public class ShouterTest {
   public void userInTeamGetsShoutedAtOnlyOnce() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true));
 
     shouter.shoutOutTo(UserId.from(73L));
     shouter.shoutOutTo(UserId.from(73L));
@@ -55,7 +52,7 @@ public class ShouterTest {
   public void userInTeamDoesNotGetShoutOutIfShoutOutIsDisabled() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true));
     shouter.changeShoutOutActiveTo(false);
 
     shouter.shoutOutTo(UserId.from(57L));
@@ -67,7 +64,7 @@ public class ShouterTest {
   public void userInTeamGetsShoutOutAfterReset() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true), new BotStatus(true));
+    Shouter shouter = new DefaultShouter(senderSpy, new StubTwitchTeam(true));
 
     shouter.shoutOutTo(UserId.from(67L));
     shouter.resetShoutOutTracking();
@@ -76,35 +73,4 @@ public class ShouterTest {
     verify(senderSpy, times(2)).send(any());
   }
 
-  private static class StubTwitchTeam implements TwitchTeam {
-    private final boolean defaultIsMember;
-
-    public StubTwitchTeam(boolean defaultIsMember) {
-      this.defaultIsMember = defaultIsMember;
-    }
-
-    @Override
-    public String name() {
-      return "stub";
-    }
-
-    @Override
-    public boolean isMember(UserId userId) {
-      return defaultIsMember;
-    }
-
-    @Override
-    public void refresh() {
-    }
-
-    @Override
-    public TwitchUser userById(UserId userId) {
-      return new TwitchUser(userId, "JitterTed", "https://twitch.tv/jitterted");
-    }
-
-    @Override
-    public int count() {
-      return 1;
-    }
-  }
 }

@@ -15,7 +15,6 @@ import com.jitterted.jittershout.adapter.triggering.twitch4j.Twitch4JTwitchTeam;
 import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchChatMessageSender;
 import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchProperties;
 import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchTeamFetcher;
-import com.jitterted.jittershout.domain.BotStatus;
 import com.jitterted.jittershout.domain.DefaultShouter;
 import com.jitterted.jittershout.domain.Shouter;
 import com.jitterted.jittershout.domain.TwitchTeam;
@@ -35,14 +34,14 @@ public class JitterShoutOutBot {
   private TwitchTeam twitchTeam;
   private TwitchChatMessageSender messageSender;
 
-  public static JitterShoutOutBot create(BotStatus botStatus) {
+  public static JitterShoutOutBot create() {
     TwitchProperties twitchProperties = TwitchProperties.loadProperties();
     JitterShoutOutBot jitterShoutOutBot = new JitterShoutOutBot();
-    jitterShoutOutBot.connect(twitchProperties, botStatus);
+    jitterShoutOutBot.connect(twitchProperties);
     return jitterShoutOutBot;
   }
 
-  private void connect(TwitchProperties twitchProperties, BotStatus botStatus) {
+  private void connect(TwitchProperties twitchProperties) {
     TwitchClient twitchClient = createTwitchClient(twitchProperties);
 
     registerEventHandlers(twitchClient.getEventManager());
@@ -56,9 +55,9 @@ public class JitterShoutOutBot {
     TeamFetcher teamFetcher = new TwitchTeamFetcher(twitchClient.getKraken(), TEAM_NAME);
     twitchTeam = new Twitch4JTwitchTeam(teamFetcher);
 
-    shouter = new DefaultShouter(messageSender, twitchTeam, botStatus);
+    shouter = new DefaultShouter(messageSender, twitchTeam);
 
-    botCommandHandler = new BotCommandHandler(messageSender, botStatus, new DefaultPermissionChecker(), shouter);
+    botCommandHandler = new BotCommandHandler(messageSender, new DefaultPermissionChecker(), shouter);
   }
 
   public TwitchTeam twitchTeam() {
@@ -111,5 +110,9 @@ public class JitterShoutOutBot {
   private void onChannelMessage(ChannelMessageEvent channelMessageEvent) {
     UserId userId = new UserId(channelMessageEvent.getUser().getId());
     shouter.shoutOutTo(userId);
+  }
+
+  public Shouter shouter() {
+    return shouter;
   }
 }

@@ -8,4 +8,6 @@ public interface Shouter {
   int shoutOutTrackingCount();
 
   void changeShoutOutActiveTo(boolean isActive);
+
+  boolean isShoutOutActive();
 }

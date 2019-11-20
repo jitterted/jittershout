@@ -1,6 +1,6 @@
 package com.jitterted.jittershout.adapter.triggering.api;
 
-import com.jitterted.jittershout.domain.BotStatus;
+import com.jitterted.jittershout.domain.Shouter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class BotController {
-  private final BotStatus botStatus;
+  private final Shouter shouter;
 
   @Autowired
-  public BotController(BotStatus botStatus) {
-    this.botStatus = botStatus;
+  public BotController(Shouter shouter) {
+    this.shouter = shouter;
   }
 
   @GetMapping("/api/botinfo")
@@ -24,12 +24,12 @@ public class BotController {
 
   @PostMapping("/api/botinfo")
   public BotInfoDto updateBotState(@RequestBody BotInfoDto botInfoDto) {
-    botStatus.setShoutOutActive(botInfoDto.isShoutOutActive());
+    shouter.changeShoutOutActiveTo(botInfoDto.isShoutOutActive());
     return createBotInfoDto();
   }
 
   @NotNull
   private BotInfoDto createBotInfoDto() {
-    return new BotInfoDto(botStatus.isShoutOutActive(), 3);
+    return new BotInfoDto(shouter.isShoutOutActive(), 3);
   }
 }

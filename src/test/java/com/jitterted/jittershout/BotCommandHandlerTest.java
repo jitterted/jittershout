@@ -3,10 +3,8 @@ package com.jitterted.jittershout;
 import com.github.twitch4j.chat.events.CommandEvent;
 import com.jitterted.jittershout.adapter.triggering.twitch4j.BotCommandHandler;
 import com.jitterted.jittershout.adapter.triggering.twitch4j.PermissionChecker;
-import com.jitterted.jittershout.domain.BotStatus;
 import com.jitterted.jittershout.domain.MessageSender;
 import com.jitterted.jittershout.domain.Shouter;
-import com.jitterted.jittershout.domain.UserId;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,7 +29,10 @@ public class BotCommandHandlerTest {
   public void statusCommandSendsBotStatusMessage() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(true), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
+    Shouter fakeShouter = new FakeShouter();
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy,
+                                                                new AlwaysAllowedPermissionChecker(),
+                                                                fakeShouter);
 
     botCommandHandler.handle(createCommandWithText("sob status"));
 
@@ -42,7 +43,11 @@ public class BotCommandHandlerTest {
   public void whenShoutOutIsDisabledStatusSaysItsOff() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(false), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
+    Shouter fakeShouter = new FakeShouter();
+    fakeShouter.changeShoutOutActiveTo(false);
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy,
+                                                                new AlwaysAllowedPermissionChecker(),
+                                                                fakeShouter);
 
     botCommandHandler.handle(createCommandWithText("sob status"));
 
@@ -52,12 +57,14 @@ public class BotCommandHandlerTest {
   @ParameterizedTest
   @CsvSource({"sob off, false", "sob on, true"})
   public void sobOffCommandDisablesShoutOut(String command, boolean expectedEnabled) throws Exception {
-    BotStatus botStatus = new BotStatus(true);
-    BotCommandHandler botCommandHandler = new BotCommandHandler(DUMMY_MESSAGE_SENDER, botStatus, new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
+    Shouter fakeShouter = new FakeShouter();
+    BotCommandHandler botCommandHandler = new BotCommandHandler(DUMMY_MESSAGE_SENDER,
+                                                                new AlwaysAllowedPermissionChecker(),
+                                                                fakeShouter);
 
     botCommandHandler.handle(createCommandWithText(command));
 
-    assertThat(botStatus.isShoutOutActive())
+    assertThat(fakeShouter.isShoutOutActive())
         .isEqualTo(expectedEnabled);
   }
 
@@ -66,7 +73,10 @@ public class BotCommandHandlerTest {
   public void sobCommandIsAcknowledgedWithNewStatusMessage(String state) throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(false), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
+    Shouter fakeShouter = new FakeShouter();
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy,
+                                                                new AlwaysAllowedPermissionChecker(),
+                                                                fakeShouter);
 
     botCommandHandler.handle(createCommandWithText("sob " + state));
 
@@ -77,7 +87,9 @@ public class BotCommandHandlerTest {
   public void sobCommandWithoutSubcommandIsIgnored() throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(true), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy,
+                                                                new AlwaysAllowedPermissionChecker(),
+                                                                DUMMY_SHOUTER);
 
     botCommandHandler.handle(createCommandWithText("sob"));
 
@@ -89,7 +101,9 @@ public class BotCommandHandlerTest {
   public void invalidCommandsAreIgnored(String commandText) throws Exception {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
 
-    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy, new BotStatus(true), new AlwaysAllowedPermissionChecker(), DUMMY_SHOUTER);
+    BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy,
+                                                                new AlwaysAllowedPermissionChecker(),
+                                                                DUMMY_SHOUTER);
 
     botCommandHandler.handle(createCommandWithText(commandText));
 
@@ -102,7 +116,6 @@ public class BotCommandHandlerTest {
 
     PermissionChecker disallowedPermissionChecker = commandPermissions -> false;
     BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy,
-                                                                new BotStatus(false),
                                                                 disallowedPermissionChecker,
                                                                 DUMMY_SHOUTER);
 
@@ -116,7 +129,6 @@ public class BotCommandHandlerTest {
     MessageSender senderSpy = Mockito.mock(MessageSender.class);
     Shouter fakeShouter = new FakeShouter();
     BotCommandHandler botCommandHandler = new BotCommandHandler(senderSpy,
-                                                                new BotStatus(true),
                                                                 new AlwaysAllowedPermissionChecker(),
                                                                 fakeShouter);
 
@@ -134,23 +146,4 @@ public class BotCommandHandlerTest {
     return new CommandEvent(null, null, null, null, commandText, Collections.emptySet());
   }
 
-  private static class FakeShouter implements Shouter {
-    private int count = 1;
-
-    public void shoutOutTo(UserId id) {
-    }
-
-    public void resetShoutOutTracking() {
-      count = 0;
-    }
-
-    @Override
-    public int shoutOutTrackingCount() {
-      return count;
-    }
-
-    @Override
-    public void changeShoutOutActiveTo(boolean isActive) {
-    }
-  }
 }

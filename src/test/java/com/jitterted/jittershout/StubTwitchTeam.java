@@ -1,18 +1,28 @@
-package com.jitterted.jittershout.adapter.triggering.api;
+package com.jitterted.jittershout;
 
 import com.jitterted.jittershout.domain.TwitchTeam;
 import com.jitterted.jittershout.domain.TwitchUser;
 import com.jitterted.jittershout.domain.UserId;
 
-class StubTwitchTeam implements TwitchTeam {
+public class StubTwitchTeam implements TwitchTeam {
+  private final boolean defaultIsMember;
+
+  public StubTwitchTeam(boolean defaultIsMember) {
+    this.defaultIsMember = defaultIsMember;
+  }
+
+  public StubTwitchTeam() {
+    this(true);
+  }
+
   @Override
   public String name() {
-    return "some team name";
+    return "stub";
   }
 
   @Override
   public boolean isMember(UserId userId) {
-    return false;
+    return defaultIsMember;
   }
 
   @Override
@@ -21,7 +31,7 @@ class StubTwitchTeam implements TwitchTeam {
 
   @Override
   public TwitchUser userById(UserId userId) {
-    return null;
+    return new TwitchUser(userId, "JitterTed", "https://twitch.tv/jitterted");
   }
 
   @Override
