@@ -98,7 +98,7 @@ public class JitterShoutOutBot {
   }
 
   private void onChannelGoLive(ChannelGoLiveEvent channelGoLiveEvent) {
-    messageSender.send("GOING LIVE: Refreshing the %s team membership and resetting Shout-Out Tracking".formatted(TEAM_NAME));
+    messageSender.send(String.format("GOING LIVE: Refreshing the '%s' team membership and resetting Shout-Out Tracking", TEAM_NAME));
     twitchTeam.refresh();
     shouter.resetShoutOutTracking();
   }

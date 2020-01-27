@@ -44,10 +44,18 @@ public class BotCommandHandler {
 
   private void handleShoutOutBotCommand(String subcommand) {
     switch (subcommand) {
-      case "status" -> messageSender.send(botStatusMessage());
-      case "off" -> changeShoutOutTo(false);
-      case "on" -> changeShoutOutTo(true);
-      case "reset" -> resetShoutOutTracker();
+      case "status":
+        messageSender.send(botStatusMessage());
+        break;
+      case "off":
+        changeShoutOutTo(false);
+        break;
+      case "on":
+        changeShoutOutTo(true);
+        break;
+      case "reset":
+        resetShoutOutTracker();
+        break;
     }
   }
 
@@ -58,11 +66,11 @@ public class BotCommandHandler {
 
   private void changeShoutOutTo(boolean active) {
     shouter.changeShoutOutActiveTo(active);
-    messageSender.send("Shout-out is now %s".formatted(shoutOutStatusAsText()));
+    messageSender.send(String.format("Shout-out is now %s", shoutOutStatusAsText()));
   }
 
   private String botStatusMessage() {
-    return "Shout-out is %s.".formatted(shoutOutStatusAsText());
+    return String.format("Shout-out is %s.", shoutOutStatusAsText());
   }
 
   @NotNull

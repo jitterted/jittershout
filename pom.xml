@@ -6,22 +6,21 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.0.RELEASE</version>
+    <version>2.2.3.RELEASE</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>com.jitterted</groupId>
   <artifactId>jittershout</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 
   <name>JitterShout</name>
   <url>http://www.jitterted.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>13</java.version>
-    <maven.compiler.source>13</maven.compiler.source>
-    <maven.compiler.target>13</maven.compiler.target>
-
+    <!-- java.version is used by Spring Boot -->
+    <java.version>11</java.version>
+    <maven.compiler.release>11</maven.compiler.release>
     <twitch4j.version>1.0.0-alpha.17</twitch4j.version>
     <archunit.version>0.11.0</archunit.version>
     <junit.platform.version>1.5.2</junit.platform.version>
@@ -43,12 +42,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <release>13</release>
-          <compilerArgs>--enable-preview</compilerArgs>
-          <forceJavacCompilerUse>true</forceJavacCompilerUse>
-        </configuration>
+        <version>3.8.1</version>
       </plugin>
 
       <plugin>
