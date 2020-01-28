@@ -13,7 +13,7 @@ import com.jitterted.jittershout.adapter.triggering.twitch4j.DefaultPermissionCh
 import com.jitterted.jittershout.adapter.triggering.twitch4j.TeamFetcher;
 import com.jitterted.jittershout.adapter.triggering.twitch4j.Twitch4JTwitchTeam;
 import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchChatMessageSender;
-import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchProperties;
+import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchConfiguration;
 import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchTeamFetcher;
 import com.jitterted.jittershout.domain.DefaultShouter;
 import com.jitterted.jittershout.domain.Shouter;
@@ -25,34 +25,32 @@ import org.jetbrains.annotations.NotNull;
 @Slf4j
 public class JitterShoutOutBot {
 
-  private static final String CHANNEL_NAME = "jitterted";
-  private static final String TEAM_NAME = "livecoders";
-
   private TwitchChat twitchChat;
   private Shouter shouter;
   private BotCommandHandler botCommandHandler;
   private TwitchTeam twitchTeam;
   private TwitchChatMessageSender messageSender;
 
-  public static JitterShoutOutBot create() {
-    TwitchProperties twitchProperties = TwitchProperties.loadProperties();
+  public static JitterShoutOutBot create(TwitchConfiguration twitchConfiguration) {
     JitterShoutOutBot jitterShoutOutBot = new JitterShoutOutBot();
-    jitterShoutOutBot.connect(twitchProperties);
+    jitterShoutOutBot.connect(twitchConfiguration);
     return jitterShoutOutBot;
   }
 
-  private void connect(TwitchProperties twitchProperties) {
+  private void connect(TwitchConfiguration twitchProperties) {
     TwitchClient twitchClient = createTwitchClient(twitchProperties);
 
     registerEventHandlers(twitchClient.getEventManager());
 
     twitchChat = twitchClient.getChat();
-    twitchChat.joinChannel(CHANNEL_NAME);
-    twitchChat.sendMessage(CHANNEL_NAME, "The JitterChat ShoutBot is here!");
+    twitchChat.joinChannel(twitchProperties.getChannelName());
+    twitchChat.sendMessage(twitchProperties.getChannelName(),
+                           "The JitterChat Shout-Out Bot is here!");
 
-    messageSender = new TwitchChatMessageSender(twitchChat, CHANNEL_NAME);
+    messageSender = new TwitchChatMessageSender(twitchChat, twitchProperties.getChannelName());
 
-    TeamFetcher teamFetcher = new TwitchTeamFetcher(twitchClient.getKraken(), TEAM_NAME);
+    @SuppressWarnings("deprecation")
+    TeamFetcher teamFetcher = new TwitchTeamFetcher(twitchClient.getKraken(), twitchProperties.getTeamName());
     twitchTeam = new Twitch4JTwitchTeam(teamFetcher);
 
     shouter = new DefaultShouter(messageSender, twitchTeam);
@@ -65,12 +63,12 @@ public class JitterShoutOutBot {
   }
 
   @NotNull
-  private TwitchClient createTwitchClient(TwitchProperties twitchProperties) {
-    OAuth2Credential credential = new OAuth2Credential("twitch", twitchProperties.getOAuthToken());
+  private TwitchClient createTwitchClient(TwitchConfiguration twitchProperties) {
+    OAuth2Credential credential = new OAuth2Credential("twitch", twitchProperties.getoAuthToken());
 
     TwitchClient twitchClient = TwitchClientBuilder.builder()
-                                                   .withClientId(twitchProperties.getTwitchClientId())
-                                                   .withClientSecret(twitchProperties.getTwitchClientSecret())
+                                                   .withClientId(twitchProperties.getClientId())
+                                                   .withClientSecret(twitchProperties.getClientSecret())
                                                    .withEnableChat(true)
                                                    .withEnableHelix(true)
                                                    .withEnableKraken(true)
@@ -79,7 +77,7 @@ public class JitterShoutOutBot {
                                                    .build();
 
     twitchClient.getClientHelper()
-                .enableStreamEventListener(CHANNEL_NAME);
+                .enableStreamEventListener(twitchProperties.getChannelName());
     return twitchClient;
   }
 
@@ -98,7 +96,9 @@ public class JitterShoutOutBot {
   }
 
   private void onChannelGoLive(ChannelGoLiveEvent channelGoLiveEvent) {
-    messageSender.send(String.format("GOING LIVE: Refreshing the '%s' team membership and resetting Shout-Out Tracking", TEAM_NAME));
+    messageSender.send(String.format(
+        "GOING LIVE: Refreshing the '%s' team membership and resetting Shout-Out Tracking",
+        twitchTeam.name()));
     twitchTeam.refresh();
     shouter.resetShoutOutTracking();
   }

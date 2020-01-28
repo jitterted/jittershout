@@ -56,7 +56,19 @@ public class BotCommandHandler {
       case "reset":
         resetShoutOutTracker();
         break;
+      case "help":
+        sendHelpMessage();
+        break;
     }
+  }
+
+  private void sendHelpMessage() {
+    messageSender.send("Commands are:" +
+                           "[ status ] - display status, " +
+                           "[ off ] - turn shout-outs off, " +
+                           "[ on ] - turn shout-outs on, " +
+                           "[ reset ] - resets tracking of who has been shout-outed at"
+    );
   }
 
   private void resetShoutOutTracker() {

@@ -1,5 +1,6 @@
 package com.jitterted.jittershout;
 
+import com.jitterted.jittershout.adapter.triggering.twitch4j.TwitchConfiguration;
 import com.jitterted.jittershout.domain.Shouter;
 import com.jitterted.jittershout.domain.TwitchTeam;
 import org.springframework.boot.SpringApplication;
@@ -14,8 +15,8 @@ public class JitterShoutApplication {
 	}
 
 	@Bean
-	public JitterShoutOutBot createBot() {
-		return JitterShoutOutBot.create();
+	public JitterShoutOutBot createBot(TwitchConfiguration twitchConfiguration) {
+		return JitterShoutOutBot.create(twitchConfiguration);
 	}
 
 	@Bean

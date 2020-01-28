@@ -30,6 +30,6 @@ public class BotController {
 
   @NotNull
   private BotInfoDto createBotInfoDto() {
-    return new BotInfoDto(shouter.isShoutOutActive(), 3);
+    return new BotInfoDto(shouter.isShoutOutActive(), shouter.shoutOutTrackingCount());
   }
 }

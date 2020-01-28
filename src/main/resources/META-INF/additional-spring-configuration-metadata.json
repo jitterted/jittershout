@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "twitch.channelName",
+      "type": "java.lang.String",
+      "description": "Description for twitch.channelName."
+    },
+    {
+      "name": "twitch.teamName",
+      "type": "java.lang.String",
+      "description": "Description for twitch.teamName."
+    },
+    {
+      "name": "twitch.oAuthToken",
+      "type": "java.lang.String",
+      "description": "Description for twitch.oAuthToken."
+    }
+  ]
+}
